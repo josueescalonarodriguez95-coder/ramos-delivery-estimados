@@ -11,97 +11,96 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', 'Roboto', 'Helvetica', 'sans-serif'] }, colors: { primary: '#FF477E' } } } }
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', 'Roboto', 'Helvetica', 'sans-serif'] }, colors: { primary: '#FF7A00' } } } }
     </script>
     <style>
-        body { background-color: #0b0709; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #000; -webkit-tap-highlight-color: transparent; }
         
-        /* Fondo ambiental en tonos suaves, pasteles y sutiles (negro profundo mezclado con rojo suave y rosa pastel) */
+        /* Fondo ambiental estilo Liquid Glass (manchas de luz difuminadas) */
         .bg-mesh { 
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; 
-            background: radial-gradient(circle at 15% 20%, rgba(220, 80, 100, 0.18) 0%, transparent 45%),
-                        radial-gradient(circle at 85% 85%, rgba(255, 150, 180, 0.12) 0%, transparent 45%),
-                        radial-gradient(circle at 50% 50%, rgba(15, 10, 12, 1) 0%, transparent 100%);
-            background-color: #0b0709; 
+            background: radial-gradient(circle at 10% 20%, rgba(255, 122, 0, 0.35) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 80%, rgba(0, 198, 255, 0.25) 0%, transparent 40%),
+                        radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            background-color: #121214; 
         }
 
         .app-container { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 1.5rem 1rem; }
         
-        /* Contenedor Superior: Combinación clara entre blanco y negro suave con borde sutil en rosa pastel */
+        /* Efecto Liquid Glass Superior (Cristal Translúcido Claro) */
         .glass-light { 
-            background: rgba(255, 255, 255, 0.88); 
+            background: rgba(255, 255, 255, 0.45); 
             backdrop-filter: blur(40px) saturate(180%); 
             -webkit-backdrop-filter: blur(40px) saturate(180%); 
-            border: 1px solid rgba(255, 150, 180, 0.5); 
+            border: 1px solid rgba(255, 255, 255, 0.6); 
             border-bottom: none; 
             border-radius: 2.5rem 2.5rem 0 0; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,1); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8); 
         }
 
-        /* Contenedor Inferior (Resumen): Estilo limpio claro (blanco/negro) con detalle en rosa */
+        /* Efecto Liquid Glass Inferior (Cristal Oscuro Esmerilado) */
         .glass-dark { 
-            background: rgba(20, 16, 18, 0.92); 
+            background: rgba(30, 30, 35, 0.65); 
             backdrop-filter: blur(40px) saturate(180%); 
             -webkit-backdrop-filter: blur(40px) saturate(180%); 
-            border-top: 1px solid rgba(255, 111, 145, 0.4); 
+            border-top: 1px solid rgba(255, 255, 255, 0.2); 
             border-radius: 0 0 2.5rem 2.5rem; 
-            box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15); 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25); 
             padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); 
         }
 
-        /* Campos de texto claros sobre la tarjeta blanca */
+        /* Campos de texto estilo cristal líquido */
         .glass-input { 
-            background: rgba(245, 241, 243, 0.85); 
+            background: rgba(255, 255, 255, 0.5); 
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(230, 180, 195, 0.6); 
+            border: 1px solid rgba(255, 255, 255, 0.7); 
             border-radius: 1.25rem; 
             font-size: 16px !important; 
-            color: #1a1a1a !important;
             transition: all 0.25s ease; 
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
         }
         .glass-input:focus { 
-            background: rgba(255, 255, 255, 1); 
-            border-color: #FF477E; 
+            background: rgba(255, 255, 255, 0.85); 
+            border-color: #FF7A00; 
             outline: none; 
-            box-shadow: 0 0 0 4px rgba(255, 71, 126, 0.2); 
+            box-shadow: 0 0 0 4px rgba(255, 122, 0, 0.2), inset 0 1px 2px rgba(0,0,0,0.02); 
         }
 
-        /* Selector de pestañas */
-        .segmented-control { background: rgba(0, 0, 0, 0.06); padding: 4px; border-radius: 99px; display: flex; border: 1px solid rgba(200, 150, 165, 0.3); }
-        .segmented-btn { border-radius: 99px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); color: #555; font-weight: 500; }
-        .segmented-btn.active { background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.1); color: #FF477E; font-weight: 700; border: 1px solid rgba(255, 71, 126, 0.3); }
+        .segmented-control { background: rgba(0, 0, 0, 0.08); padding: 4px; border-radius: 99px; display: flex; }
+        .segmented-btn { border-radius: 99px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); color: #333; font-weight: 500; }
+        .segmented-btn.active { background: rgba(255, 255, 255, 0.9); box-shadow: 0 4px 12px rgba(0,0,0,0.1); color: #FF7A00; font-weight: 700; }
         
         .tab-content { display: none; animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
         .tab-content.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Botón de WhatsApp elegante con acento rosa pastel y blanco */
         .btn-apple { 
-            background: #ffffff; 
-            color: #111111; 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(10px);
+            color: #000000; 
             transition: transform 0.15s, background 0.2s; 
-            box-shadow: 0 8px 25px rgba(255, 71, 126, 0.25), inset 0 1px 0 rgba(255,255,255,1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,1);
         }
-        .btn-apple:active { transform: scale(0.96); background: #f0f0f0; }
+        .btn-apple:active { transform: scale(0.96); background: rgba(255, 255, 255, 0.7); }
     </style>
 </head>
-<body class="text-white">
+<body class="text-gray-900">
     <div class="bg-mesh"></div>
     <div class="app-container">
         <!-- HEADER -->
         <div class="flex items-center gap-4 mb-6 px-2">
-            <div class="w-16 h-16 flex-shrink-0 bg-white/90 backdrop-blur-md p-1 rounded-2xl shadow-lg border border-pink-300/40 flex items-center justify-center">
+            <div class="w-16 h-16 flex-shrink-0 bg-white/70 backdrop-blur-md p-1 rounded-2xl shadow-lg border border-white/80 flex items-center justify-center">
                 <img src="https://i.imgur.com/0WfdGVr.png" alt="Logotipo Ramos Delivery" class="w-full h-full object-contain rounded-xl">
             </div>
             <div class="flex flex-col justify-center">
                 <h1 class="font-black text-2xl tracking-tighter text-white leading-tight drop-shadow-md">Ramos Delivery</h1>
-                <p class="text-xs font-bold text-pink-300 uppercase tracking-widest mt-0.5 drop-shadow">Enterprise</p>
+                <p class="text-xs font-bold text-orange-400 uppercase tracking-widest mt-0.5 drop-shadow">Enterprise</p>
             </div>
         </div>
 
         <div class="flex flex-col shadow-2xl rounded-[2.5rem]">
-            <div class="glass-light p-6 pb-6 text-gray-900">
+            <div class="glass-light p-6 pb-6">
                 <!-- PESTAÑAS -->
                 <div class="segmented-control mb-6">
                     <button id="btnTabDelivery" onclick="switchTab('delivery')" class="segmented-btn active flex-1 py-3 text-sm flex justify-center items-center gap-2">
@@ -118,18 +117,18 @@
                         <label class="block text-sm font-bold text-gray-800 mb-2 ml-1">📍 Destino del envío</label>
                         <div class="relative">
                             <select id="deliveryZone" class="w-full glass-input text-gray-900 p-4 appearance-none cursor-pointer pr-10" onchange="calculate()">
-                                <optgroup label="Local (Miami)" class="bg-white text-gray-900">
+                                <optgroup label="Local (Miami)">
                                     <option value="miami_corta">Delivery local (0–5 mi)</option>
                                     <option value="miami_larga">Delivery local (5–15 mi)</option>
                                     <option value="miami_express">Delivery exprés (< 2 horas)</option>
                                     <option value="miami_programada">Entrega programada</option>
                                 </optgroup>
-                                <optgroup label="Florida (Fuera de Miami)" class="bg-white text-gray-900">
+                                <optgroup label="Florida (Fuera de Miami)">
                                     <option value="sur_fl">Sur de Florida (Broward, Palm Beach...)</option>
                                     <option value="centro_fl">Centro de Florida (Orlando, Tampa...)</option>
                                     <option value="norte_fl">Norte de Florida (Jacksonville...)</option>
                                 </optgroup>
-                                <optgroup label="Fuera de Florida" class="bg-white text-gray-900">
+                                <optgroup label="Fuera de Florida">
                                     <option value="sureste_eeuu">Sureste de EE.UU. (Georgia, Carolinas...)</option>
                                     <option value="nacional">Nacional (Cualquier otro estado)</option>
                                 </optgroup>
@@ -145,11 +144,11 @@
                         <label class="block text-sm font-bold text-gray-800 mb-2 ml-1">1. Ubicación del trabajo</label>
                         <div class="relative">
                             <select id="installZone" class="w-full glass-input text-gray-900 p-4 appearance-none cursor-pointer pr-10" onchange="calculate()">
-                                <optgroup label="Miami" class="bg-white text-gray-900">
+                                <optgroup label="Miami">
                                     <option value="miami_sitio">En casa del cliente (Ya estoy ahí)</option>
                                     <option value="miami_local">Local (Requiere desplazamiento a la casa)</option>
                                 </optgroup>
-                                <optgroup label="Fuera de Miami" class="bg-white text-gray-900">
+                                <optgroup label="Fuera de Miami">
                                     <option value="fuera_miami">Cualquier zona (Broward, Palm Beach...)</option>
                                 </optgroup>
                             </select>
@@ -181,33 +180,33 @@
             </div>
 
             <div class="glass-dark p-6 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-pink-500/10 to-transparent pointer-events-none"></div>
+                <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
                 
                 <div class="relative z-10">
-                    <h3 class="text-xs font-bold uppercase tracking-widest text-pink-300 mb-3 flex items-center gap-2">
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-white/60 mb-3 flex items-center gap-2">
                         <i data-lucide="receipt" class="w-4 h-4"></i> Resumen
                     </h3>
                     
                     <div class="space-y-2 mb-4">
-                        <div class="flex justify-between items-end border-b border-pink-500/20 pb-2">
-                            <span id="summaryLabel1" class="text-xs text-gray-300 font-medium">Servicio</span>
+                        <div class="flex justify-between items-end border-b border-white/15 pb-2">
+                            <span id="summaryLabel1" class="text-xs text-white/70 font-medium">Servicio</span>
                             <span id="summaryValue1" class="font-bold text-sm text-right text-white">Delivery</span>
                         </div>
-                        <div class="flex justify-between items-end border-b border-pink-500/20 pb-2">
-                            <span id="summaryLabel2" class="text-xs text-gray-300 font-medium">Detalle</span>
-                            <span id="summaryValue2" class="font-bold text-right text-pink-200 text-xs max-w-[180px] truncate">Miami (0-5 mi)</span>
+                        <div class="flex justify-between items-end border-b border-white/15 pb-2">
+                            <span id="summaryLabel2" class="text-xs text-white/70 font-medium">Detalle</span>
+                            <span id="summaryValue2" class="font-bold text-right text-white/90 text-xs max-w-[180px] truncate">Miami (0-5 mi)</span>
                         </div>
                     </div>
 
                     <div class="mb-5">
-                        <span class="block text-xs text-gray-300 mb-1 font-medium">Total Estimado</span>
+                        <span class="block text-xs text-white/70 mb-1 font-medium">Total Estimado</span>
                         <div class="text-3xl leading-none font-black text-white tracking-tight drop-shadow-md" id="totalPrice">
                             A cotizar
                         </div>
                     </div>
                 </div>
 
-                <button onclick="contactarWhatsApp()" class="btn-apple w-full py-3.5 rounded-[1.25rem] font-bold text-base flex items-center justify-center gap-2 shadow-[0_8px_25px_rgba(255,71,126,0.2)] relative z-10">
+                <button onclick="contactarWhatsApp()" class="btn-apple w-full py-3.5 rounded-[1.25rem] font-bold text-base flex items-center justify-center gap-2 shadow-[0_8px_20px_rgba(0,0,0,0.3)] relative z-10">
                     <i data-lucide="message-circle" class="w-5 h-5 text-[#34C759]"></i> 
                     Enviar a WhatsApp
                 </button>

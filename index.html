@@ -16,7 +16,7 @@ tailwind.config = { theme: { extend: { fontFamily: { sans: ['-apple-system', 'Bl
 <style>
 body { background-color: #000; -webkit-tap-highlight-color: transparent; }
 
-/* Fondo ambiental estilo Liquid Glass */
+/* Fondo ambiental oscuro y elegante (Liquid Glass Dark) */
 .bg-mesh { 
 position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; 
 background: radial-gradient(circle at 10% 20%, rgba(100, 100, 120, 0.25) 0%, transparent 40%),
@@ -27,6 +27,7 @@ background-color: #0f0f11;
 
 .app-container { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 1.5rem 1rem; }
 
+/* Efecto Liquid Glass Superior (Cristal Translúcido Claro) */
 .glass-light { 
 background: rgba(255, 255, 255, 0.45); 
 backdrop-filter: blur(40px) saturate(180%); 
@@ -37,6 +38,7 @@ border-radius: 2.5rem 2.5rem 0 0;
 box-shadow: 0 30px 60px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.8); 
 }
 
+/* Efecto Liquid Glass Inferior (Cristal Oscuro Esmerilado) */
 .glass-dark { 
 background: rgba(30, 30, 35, 0.65); 
 backdrop-filter: blur(40px) saturate(180%); 
@@ -47,6 +49,7 @@ box-shadow: 0 30px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
 padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); 
 }
 
+/* Campos de texto estilo cristal líquido */
 .glass-input { 
 background: rgba(255, 255, 255, 0.5); 
 backdrop-filter: blur(10px);
@@ -98,12 +101,13 @@ box-shadow: 0 8px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,1);
 
 <div class="flex flex-col shadow-2xl rounded-[2.5rem]">
 <div class="glass-light p-6 pb-6">
+
 <!-- SELECTOR DE TRABAJADOR -->
 <div class="mb-6">
 <label class="block text-sm font-bold text-gray-800 mb-2 ml-1">👤 Atendido por (Especialista)</label>
 <div class="relative">
 <select id="workerName" class="w-full glass-input text-gray-900 p-4 appearance-none cursor-pointer pr-10 font-bold">
-<option value="No especificado" disabled selected>Selecciona un nombre...</option>
+<option value="No especificado" disabled selected>Selecciona tu nombre...</option>
 <option value="Cristóbal Moit">Cristóbal Moit</option>
 <option value="Danilo Almarales">Danilo Almarales</option>
 <option value="Leonardo Escalona">Leonardo Escalona</option>

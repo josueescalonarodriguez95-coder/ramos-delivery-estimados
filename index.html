@@ -28,104 +28,21 @@
         }
     </script>
     <style>
-        body {
-            background-color: #000;
-            -webkit-tap-highlight-color: transparent;
-        }
-        .bg-mesh {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            background: radial-gradient(at 20% 0%, hsla(28,100%,74%,1) 0px, transparent 50%),
-                        radial-gradient(at 80% 0%, hsla(189,100%,56%,0.4) 0px, transparent 50%),
-                        radial-gradient(at 100% 100%, hsla(355,100%,93%,1) 0px, transparent 50%),
-                        radial-gradient(at 0% 100%, hsla(22,100%,77%,1) 0px, transparent 50%);
-            filter: blur(50px);
-            opacity: 0.8;
-            background-color: #f2f2f7;
-        }
-        .app-container {
-            max-width: 440px;
-            margin: 0 auto;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding-top: calc(1.5rem + env(safe-area-inset-top));
-            padding-bottom: calc(2rem + env(safe-area-inset-bottom));
-        }
-        .glass-light {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            border-bottom: none;
-            border-radius: 2.5rem 2.5rem 0 0;
-            box-shadow: 0 -10px 40px rgba(0,0,0,0.05);
-        }
-        .glass-dark {
-            background: rgba(28, 28, 30, 0.85);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 0 0 2.5rem 2.5rem;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-            padding-bottom: calc(2rem + env(safe-area-inset-bottom)); 
-        }
-        .glass-input {
-            background: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            border-radius: 1.25rem;
-            font-size: 16px !important;
-            transition: all 0.2s ease;
-        }
-        .glass-input:focus {
-            background: #ffffff;
-            border-color: #FF7A00;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15);
-        }
-        .segmented-control {
-            background: rgba(0, 0, 0, 0.08);
-            padding: 4px;
-            border-radius: 99px;
-            display: flex;
-        }
-        .segmented-btn {
-            border-radius: 99px;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            color: #4b5563;
-            font-weight: 500;
-        }
-        .segmented-btn.active {
-            background: white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            color: #FF7A00;
-            font-weight: 700;
-        }
-        input[type="radio"]:checked + div {
-            background: #ffffff;
-            border-color: #FF7A00;
-            box-shadow: 0 4px 12px rgba(255, 122, 0, 0.15);
-            transform: scale(1.03);
-        }
-        input[type="radio"]:checked + div i, input[type="radio"]:checked + div span {
-            color: #FF7A00;
-        }
+        body { background-color: #000; -webkit-tap-highlight-color: transparent; }
+        .bg-mesh { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: radial-gradient(at 20% 0%, hsla(28,100%,74%,1) 0px, transparent 50%), radial-gradient(at 80% 0%, hsla(189,100%,56%,0.4) 0px, transparent 50%), radial-gradient(at 100% 100%, hsla(355,100%,93%,1) 0px, transparent 50%), radial-gradient(at 0% 100%, hsla(22,100%,77%,1) 0px, transparent 50%); filter: blur(50px); opacity: 0.8; background-color: #f2f2f7; }
+        .app-container { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; padding-top: calc(1.5rem + env(safe-area-inset-top)); padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+        .glass-light { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.8); border-bottom: none; border-radius: 2.5rem 2.5rem 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.05); }
+        .glass-dark { background: rgba(28, 28, 30, 0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-top: 1px solid rgba(255, 255, 255, 0.15); border-radius: 0 0 2.5rem 2.5rem; box-shadow: 0 15px 40px rgba(0,0,0,0.2); padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
+        .glass-input { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 1.25rem; font-size: 16px !important; transition: all 0.2s ease; }
+        .glass-input:focus { background: #ffffff; border-color: #FF7A00; outline: none; box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15); }
+        .segmented-control { background: rgba(0, 0, 0, 0.08); padding: 4px; border-radius: 99px; display: flex; }
+        .segmented-btn { border-radius: 99px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); color: #4b5563; font-weight: 500; }
+        .segmented-btn.active { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); color: #FF7A00; font-weight: 700; }
         .tab-content { display: none; animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
         .tab-content.active { display: block; }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .btn-apple {
-            background: #ffffff;
-            color: #000000;
-            transition: transform 0.15s;
-        }
-        .btn-apple:active {
-            transform: scale(0.96);
-            background: #f3f4f6;
-        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-apple { background: #ffffff; color: #000000; transition: transform 0.15s; }
+        .btn-apple:active { transform: scale(0.96); background: #f3f4f6; }
     </style>
 </head>
 <body class="text-gray-900">
@@ -133,7 +50,7 @@
     <div class="bg-mesh"></div>
 
     <div class="app-container px-4 sm:px-0">
-        <!-- HEADER CON TU LOGOTIPO Y ESTILO ENTERPRISE -->
+        <!-- HEADER -->
         <div class="flex items-center gap-4 mb-8 px-2 mt-2">
             <div class="w-16 h-16 flex-shrink-0 bg-white p-1 rounded-2xl shadow-md border border-gray-100 flex items-center justify-center">
                 <img src="https://i.imgur.com/0WfdGVr.png" alt="Logotipo Ramos Delivery" class="w-full h-full object-contain rounded-xl">
@@ -146,6 +63,7 @@
 
         <div class="flex-1 flex flex-col shadow-2xl rounded-[2.5rem]">
             <div class="glass-light p-6 pb-8">
+                <!-- PESTAÑAS -->
                 <div class="segmented-control mb-8">
                     <button id="btnTabDelivery" onclick="switchTab('delivery')" class="segmented-btn active flex-1 py-3 text-sm flex justify-center items-center gap-2">
                         <i data-lucide="truck" class="w-4 h-4"></i> Solo Delivery
@@ -155,6 +73,7 @@
                     </button>
                 </div>
 
+                <!-- TAB DELIVERY -->
                 <div id="tabDelivery" class="tab-content active space-y-6">
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-2 ml-1">📍 Destino del envío</label>
@@ -181,13 +100,14 @@
                     </div>
                 </div>
 
+                <!-- TAB INSTALL (NUEVO DISEÑO MIXTO) -->
                 <div id="tabInstall" class="tab-content space-y-7">
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-2 ml-1">1. Ubicación del trabajo</label>
                         <div class="relative">
                             <select id="installZone" class="w-full glass-input text-gray-900 p-4 appearance-none cursor-pointer pr-10" onchange="calculate()">
                                 <optgroup label="Miami">
-                                    <option value="miami_sitio">Instalación estando en la casa del cliente</option>
+                                    <option value="miami_sitio">En casa del cliente (Ya estoy ahí)</option>
                                     <option value="miami_local">Local (Requiere desplazamiento a la casa)</option>
                                 </optgroup>
                                 <optgroup label="Fuera de Miami">
@@ -199,42 +119,48 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-bold text-gray-800 mb-2 ml-1">2. Tamaño de las obras</label>
-                        <div class="grid grid-cols-3 gap-3">
-                            <label class="cursor-pointer relative">
-                                <input type="radio" name="size" value="pequeno" class="sr-only" checked onchange="calculate()">
-                                <div class="glass-input h-full py-4 px-2 text-center flex flex-col items-center justify-center">
-                                    <i data-lucide="frame" class="w-6 h-6 mb-1 text-gray-500"></i>
-                                    <span class="block text-xs font-bold text-gray-600">Pequeño</span>
+                        <label class="block text-sm font-bold text-gray-800 mb-3 ml-1">2. Obras a instalar (Cantidades)</label>
+                        <div class="space-y-3">
+                            
+                            <!-- Pequeños -->
+                            <div class="flex items-center justify-between glass-input p-2 pr-3">
+                                <div class="flex items-center gap-3 pl-2">
+                                    <i data-lucide="frame" class="w-5 h-5 text-gray-500"></i>
+                                    <span class="block font-bold text-sm text-gray-800">Pequeños</span>
                                 </div>
-                            </label>
-                            <label class="cursor-pointer relative">
-                                <input type="radio" name="size" value="mediano" class="sr-only" onchange="calculate()">
-                                <div class="glass-input h-full py-4 px-2 text-center flex flex-col items-center justify-center">
-                                    <i data-lucide="frame" class="w-8 h-8 mb-1 text-gray-500"></i>
-                                    <span class="block text-xs font-bold text-gray-600">Mediano</span>
+                                <div class="flex items-center bg-white/60 rounded-xl border border-white">
+                                    <button type="button" onclick="changeSizeQty('qtySmall', -1)" class="w-10 h-10 flex items-center justify-center text-gray-800 active:scale-95"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                                    <input type="number" id="qtySmall" value="1" min="0" class="w-8 text-center font-black bg-transparent border-none outline-none text-gray-900" readonly>
+                                    <button type="button" onclick="changeSizeQty('qtySmall', 1)" class="w-10 h-10 flex items-center justify-center text-[#FF7A00] active:scale-95"><i data-lucide="plus" class="w-4 h-4"></i></button>
                                 </div>
-                            </label>
-                            <label class="cursor-pointer relative">
-                                <input type="radio" name="size" value="grande" class="sr-only" onchange="calculate()">
-                                <div class="glass-input h-full py-4 px-2 text-center flex flex-col items-center justify-center">
-                                    <i data-lucide="frame" class="w-10 h-10 mb-1 text-gray-500"></i>
-                                    <span class="block text-xs font-bold text-gray-600">Grande</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
+                            </div>
 
-                    <div>
-                        <label class="block text-sm font-bold text-gray-800 mb-2 ml-1">3. Cantidad a instalar</label>
-                        <div class="flex items-center justify-between bg-white/40 p-2 rounded-2xl border border-white/50">
-                            <button type="button" onclick="changeQty(-1)" class="w-12 h-12 rounded-[14px] bg-white/50 hover:bg-white text-gray-800 flex items-center justify-center shadow-sm active:scale-95 transition-transform">
-                                <i data-lucide="minus" class="w-5 h-5"></i>
-                            </button>
-                            <input type="number" id="installQty" value="1" min="1" class="w-20 text-center text-2xl font-black bg-transparent border-none outline-none text-gray-900" readonly>
-                            <button type="button" onclick="changeQty(1)" class="w-12 h-12 rounded-[14px] bg-white text-[#FF7A00] flex items-center justify-center shadow-md active:scale-95 transition-transform">
-                                <i data-lucide="plus" class="w-5 h-5"></i>
-                            </button>
+                            <!-- Medianos -->
+                            <div class="flex items-center justify-between glass-input p-2 pr-3">
+                                <div class="flex items-center gap-3 pl-2">
+                                    <i data-lucide="frame" class="w-6 h-6 text-gray-500"></i>
+                                    <span class="block font-bold text-sm text-gray-800">Medianos</span>
+                                </div>
+                                <div class="flex items-center bg-white/60 rounded-xl border border-white">
+                                    <button type="button" onclick="changeSizeQty('qtyMedium', -1)" class="w-10 h-10 flex items-center justify-center text-gray-800 active:scale-95"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                                    <input type="number" id="qtyMedium" value="0" min="0" class="w-8 text-center font-black bg-transparent border-none outline-none text-gray-900" readonly>
+                                    <button type="button" onclick="changeSizeQty('qtyMedium', 1)" class="w-10 h-10 flex items-center justify-center text-[#FF7A00] active:scale-95"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+
+                            <!-- Grandes -->
+                            <div class="flex items-center justify-between glass-input p-2 pr-3">
+                                <div class="flex items-center gap-3 pl-2">
+                                    <i data-lucide="frame" class="w-7 h-7 text-gray-500"></i>
+                                    <span class="block font-bold text-sm text-gray-800">Grandes</span>
+                                </div>
+                                <div class="flex items-center bg-white/60 rounded-xl border border-white">
+                                    <button type="button" onclick="changeSizeQty('qtyLarge', -1)" class="w-10 h-10 flex items-center justify-center text-gray-800 active:scale-95"><i data-lucide="minus" class="w-4 h-4"></i></button>
+                                    <input type="number" id="qtyLarge" value="0" min="0" class="w-8 text-center font-black bg-transparent border-none outline-none text-gray-900" readonly>
+                                    <button type="button" onclick="changeSizeQty('qtyLarge', 1)" class="w-10 h-10 flex items-center justify-center text-[#FF7A00] active:scale-95"><i data-lucide="plus" class="w-4 h-4"></i></button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -332,10 +258,11 @@
             calculate();
         }
 
-        function changeQty(amount) {
-            const input = document.getElementById('installQty');
+        // Nueva función para sumar/restar tallas independientes
+        function changeSizeQty(id, amount) {
+            const input = document.getElementById(id);
             let val = parseInt(input.value) + amount;
-            if(val >= 1) {
+            if(val >= 0) {
                 input.value = val;
                 calculate();
             }
@@ -367,29 +294,40 @@
             } 
             else if (currentTab === 'install') {
                 const zoneKey = document.getElementById('installZone').value;
-                const size = document.querySelector('input[name="size"]:checked').value;
-                const qty = parseInt(document.getElementById('installQty').value);
                 const data = dbInstall[zoneKey];
 
+                const qS = parseInt(document.getElementById('qtySmall').value);
+                const qM = parseInt(document.getElementById('qtyMedium').value);
+                const qG = parseInt(document.getElementById('qtyLarge').value);
+                const totalQty = qS + qM + qG;
+
                 lbl1.innerText = "Servicio";
-                val1.innerText = `Instalación (${qty})`;
+                val1.innerText = totalQty > 0 ? `Instalación (${totalQty})` : "Instalación";
                 lbl2.innerText = "Ubicación";
                 val2.innerText = data.label;
 
-                let finalPrice = "";
+                let finalPrice = 0;
 
-                if (zoneKey === 'miami_sitio' || zoneKey === 'fuera_miami') {
-                    let costo = data.prices[size] * qty;
-                    finalPrice = formatCurrency(costo);
-                } 
-                else if (zoneKey === 'miami_local') {
-                    let costoPrimera = data.primera[size];
-                    let costoExtras = (qty - 1) * data.extra[size];
-                    finalPrice = formatCurrency(costoPrimera + costoExtras);
+                if (totalQty === 0) {
+                    total.innerText = "$0";
+                } else {
+                    if (zoneKey === 'miami_sitio' || zoneKey === 'fuera_miami') {
+                        finalPrice = (qS * data.prices.pequeno) + (qM * data.prices.mediano) + (qG * data.prices.grande);
+                    } 
+                    else if (zoneKey === 'miami_local') {
+                        // Cobra la "primera" (desplazamiento) a la obra más grande que haya en la lista
+                        if (qG > 0) {
+                            finalPrice = data.primera.grande + ((qG - 1) * data.extra.grande) + (qM * data.extra.mediano) + (qS * data.extra.pequeno);
+                        } else if (qM > 0) {
+                            finalPrice = data.primera.mediano + ((qM - 1) * data.extra.mediano) + (qS * data.extra.pequeno);
+                        } else if (qS > 0) {
+                            finalPrice = data.primera.pequeno + ((qS - 1) * data.extra.pequeno);
+                        }
+                    }
+                    total.innerText = formatCurrency(finalPrice);
                 }
-
-                total.innerText = finalPrice;
-                total.style.fontSize = "2.8rem";
+                
+                total.style.fontSize = totalQty > 0 ? "2.8rem" : "2.5rem";
             }
         }
 
@@ -405,11 +343,18 @@
             } else {
                 const sel = document.getElementById('installZone');
                 const zona = sel.options[sel.selectedIndex].text;
-                const qty = document.getElementById('installQty').value;
-                const sizeVal = document.querySelector('input[name="size"]:checked').value;
-                const sizeName = sizeVal.charAt(0).toUpperCase() + sizeVal.slice(1);
+                
+                const qS = parseInt(document.getElementById('qtySmall').value);
+                const qM = parseInt(document.getElementById('qtyMedium').value);
+                const qG = parseInt(document.getElementById('qtyLarge').value);
+                
+                let sizesText = [];
+                if(qG > 0) sizesText.push(`${qG} Grande(s)`);
+                if(qM > 0) sizesText.push(`${qM} Mediano(s)`);
+                if(qS > 0) sizesText.push(`${qS} Pequeño(s)`);
+                let obrasInfo = sizesText.length > 0 ? sizesText.join(", ") : "Ninguna";
 
-                mensaje = `Hola Ramos Delivery! 🖼️\nBusco cotizar una *Instalación de Arte*.\n\n📍 Ubicación: ${zona}\n📦 Cantidad: ${qty} obras (${sizeName})\n💰 Estimado web: ${total}\n\n¿Podemos agendar?`;
+                mensaje = `Hola Ramos Delivery! 🖼️\nBusco cotizar una *Instalación de Arte*.\n\n📍 Ubicación: ${zona}\n📦 Obras: ${obrasInfo}\n💰 Estimado web: ${total}\n\n¿Podemos agendar?`;
             }
 
             const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;

@@ -47,6 +47,9 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 
 .btn-apple { background: #ffffff; color: #000000; transition: transform 0.15s; }
 .btn-apple:active { transform: scale(0.96); background: #f3f4f6; }
+
+/* Estilo para el Checkbox del descuento */
+.custom-checkbox { width: 1.25rem; height: 1.25rem; accent-color: #FF7A00; cursor: pointer; }
 </style>
 </head>
 <body class="text-gray-900">
@@ -157,6 +160,17 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 </div>
 </div>
 </div>
+
+<!-- CASILLA DE DESCUENTO -->
+<div class="mt-5 pt-5 border-t border-gray-200/60">
+<label class="flex items-center gap-3 cursor-pointer">
+<input type="checkbox" id="discountCheck" onchange="calculate()" class="custom-checkbox">
+<span class="text-sm font-bold text-gray-800 flex items-center gap-1.5">
+<i data-lucide="tag" class="w-4 h-4 text-orange-600"></i> Aplicar 10% de descuento
+</span>
+</label>
+</div>
+
 </div>
 
 <div class="glass-dark p-6 relative overflow-hidden">
@@ -177,7 +191,7 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 <span id="summaryValue2" class="font-bold text-right text-white/90 text-xs max-w-[180px] truncate">Miami (0-5 mi)</span>
 </div>
 
-<!-- Desglose dinámico de cantidades (Solo visible en Instalación si > 0) -->
+<!-- Desglose dinámico de cantidades (Instalación) -->
 <div id="rowSmall" class="hidden justify-between items-end border-b border-white/10 pb-2">
 <span class="text-xs text-white/70 font-medium flex items-center gap-1.5"><i data-lucide="frame" class="w-3.5 h-3.5 opacity-70"></i> Obras Pequeñas</span>
 <span id="valSmall" class="font-bold text-right text-white/90 text-xs">0</span>
@@ -189,6 +203,12 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 <div id="rowLarge" class="hidden justify-between items-end border-b border-white/10 pb-2">
 <span class="text-xs text-white/70 font-medium flex items-center gap-1.5"><i data-lucide="frame" class="w-3.5 h-3.5 opacity-70"></i> Obras Grandes</span>
 <span id="valLarge" class="font-bold text-right text-white/90 text-xs">0</span>
+</div>
+
+<!-- Fila del descuento -->
+<div id="rowDiscount" class="hidden justify-between items-end border-b border-white/10 pb-2">
+<span class="text-xs text-orange-400 font-bold flex items-center gap-1.5"><i data-lucide="badge-percent" class="w-4 h-4"></i> Descuento aplicado</span>
+<span class="font-bold text-right text-orange-400 text-xs">-10%</span>
 </div>
 </div>
 
@@ -212,10 +232,11 @@ Enviar a WhatsApp
 lucide.createIcons();
 let currentTab = 'delivery';
 
+// Base de datos actualizada
 const dbDelivery = {
-miami_corta: { type: 'tbd', label: 'Miami (0-5 mi)' },
-miami_larga: { type: 'tbd', label: 'Miami (5-15 mi)' },
-miami_express: { type: 'tbd', label: 'Miami Exprés' },
+miami_corta: { type: 'range', label: 'Miami (0-5 mi)', min: 80, max: 250 },
+miami_larga: { type: 'range', label: 'Miami (5-15 mi)', min: 80, max: 350 },
+miami_express: { type: 'range', label: 'Miami Exprés', min: 250, max: 500 },
 miami_programada: { type: 'tbd', label: 'Miami Programada' },
 sur_fl: { type: 'range', label: 'Sur de FL', min: 500, max: 900 },
 centro_fl: { type: 'range', label: 'Centro de FL', min: 950, max: 1200 },
@@ -240,8 +261,9 @@ prices: { pequeno: 250, mediano: 300, grande: 350 }
 }
 };
 
+// Formatea dinero, muestra 2 decimales si el número no es exacto
 function formatCurrency(amount) {
-return "$" + amount.toLocaleString('en-US');
+return "$" + amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
 function switchTab(tabId) {
@@ -272,13 +294,26 @@ const lbl2 = document.getElementById('summaryLabel2');
 const val2 = document.getElementById('summaryValue2');
 const total = document.getElementById('totalPrice');
 
-// Nodos del desglose
+// Nodos del desglose de instalación
 const rowSmall = document.getElementById('rowSmall');
 const rowMedium = document.getElementById('rowMedium');
 const rowLarge = document.getElementById('rowLarge');
 const valSmall = document.getElementById('valSmall');
 const valMedium = document.getElementById('valMedium');
 const valLarge = document.getElementById('valLarge');
+
+// Nodo de descuento
+const rowDiscount = document.getElementById('rowDiscount');
+const applyDiscount = document.getElementById('discountCheck').checked;
+
+// Mostrar/Ocultar fila de descuento en el resumen
+if (applyDiscount) {
+rowDiscount.classList.remove('hidden');
+rowDiscount.classList.add('flex');
+} else {
+rowDiscount.classList.add('hidden');
+rowDiscount.classList.remove('flex');
+}
 
 if (currentTab === 'delivery') {
 const zoneKey = document.getElementById('deliveryZone').value;
@@ -298,7 +333,15 @@ if (data.type === 'tbd') {
 total.innerText = "A cotizar";
 total.style.fontSize = "2rem";
 } else {
-total.innerText = `${formatCurrency(data.min)} a ${formatCurrency(data.max)}`;
+let minPrice = data.min;
+let maxPrice = data.max;
+
+if (applyDiscount) {
+minPrice = minPrice * 0.9;
+maxPrice = maxPrice * 0.9;
+}
+
+total.innerText = `${formatCurrency(minPrice)} a ${formatCurrency(maxPrice)}`;
 total.style.fontSize = "1.5rem";
 }
 } 
@@ -347,6 +390,11 @@ finalPrice += countS * data.extra.pequeno;
 finalPrice += data.primera.pequeno + ((countS - 1) * data.extra.pequeno);
 }
 }
+
+if (applyDiscount && finalPrice > 0) {
+finalPrice = finalPrice * 0.9;
+}
+
 total.innerText = formatCurrency(finalPrice);
 }
 
@@ -361,11 +409,13 @@ const numeroWhatsApp = "17864262444";
 
 const workerSelect = document.getElementById('workerName').value;
 const workerNameFormat = workerSelect !== "No especificado" ? workerSelect : "No especificado";
+const applyDiscount = document.getElementById('discountCheck').checked;
+const discountText = applyDiscount ? "\n🏷️ *Promoción:* 10% de descuento APLICADO" : "";
 
 if (currentTab === 'delivery') {
 const sel = document.getElementById('deliveryZone');
 const destino = sel.options[sel.selectedIndex].text;
-mensaje = `Hola Ramos Delivery! 🚚\n\n👤 *Cotizado por:* ${workerNameFormat}\n📦 *Servicio:* Delivery\n📍 *Destino:* ${destino}\n💰 *Estimado:* ${total}`;
+mensaje = `Hola Ramos Delivery! 🚚\n\n👤 *Cotizado por:* ${workerNameFormat}\n📦 *Servicio:* Delivery\n📍 *Destino:* ${destino}${discountText}\n💰 *Estimado:* ${total}`;
 } else {
 const sel = document.getElementById('installZone');
 const zona = sel.options[sel.selectedIndex].text;
@@ -380,7 +430,7 @@ if(qM > 0) sizesText.push(`${qM} Mediano(s)`);
 if(qS > 0) sizesText.push(`${qS} Pequeño(s)`);
 let obrasInfo = sizesText.length > 0 ? sizesText.join(", ") : "Ninguna";
 
-mensaje = `Hola Ramos Delivery! 🖼️\n\n👤 *Cotizado por:* ${workerNameFormat}\n📦 *Servicio:* Instalación de Arte\n📍 *Ubicación:* ${zona}\n🖼️ *Obras:* ${obrasInfo}\n💰 *Estimado:* ${total}`;
+mensaje = `Hola Ramos Delivery! 🖼️\n\n👤 *Cotizado por:* ${workerNameFormat}\n📦 *Servicio:* Instalación de Arte\n📍 *Ubicación:* ${zona}\n🖼️ *Obras:* ${obrasInfo}${discountText}\n💰 *Estimado:* ${total}`;
 }
 
 const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
@@ -391,4 +441,3 @@ calculate();
 </script>
 </body>
 </html>
-

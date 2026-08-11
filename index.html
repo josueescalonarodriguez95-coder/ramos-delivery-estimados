@@ -118,6 +118,16 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 </select>
 <i data-lucide="chevron-down" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none w-5 h-5"></i>
 </div>
+<p id="deliverySuggestedRange" class="text-[11px] text-orange-600 font-bold mt-2 ml-2 hidden">Rango sugerido: $80 - $250</p>
+</div>
+
+<!-- NUEVO: INPUT MANUAL DE PRECIO PARA DELIVERY -->
+<div>
+<label class="block text-sm font-bold text-gray-800 mb-2 ml-1">💰 Precio acordado ($)</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600 font-bold">$</span>
+<input type="text" inputmode="decimal" id="manualDeliveryPrice" placeholder="Ej. 150" oninput="calculate()" class="w-full glass-input text-gray-900 p-4 pl-8 font-black text-lg">
+</div>
 </div>
 </div>
 
@@ -232,7 +242,6 @@ Enviar a WhatsApp
 lucide.createIcons();
 let currentTab = 'delivery';
 
-// Base de datos actualizada
 const dbDelivery = {
 miami_corta: { type: 'range', label: 'Miami (0-5 mi)', min: 80, max: 250 },
 miami_larga: { type: 'range', label: 'Miami (5-15 mi)', min: 80, max: 350 },
@@ -261,7 +270,7 @@ prices: { pequeno: 250, mediano: 300, grande: 350 }
 }
 };
 
-// Formatea dinero, muestra 2 decimales si el número no es exacto
+// Formatea dinero
 function formatCurrency(amount) {
 return "$" + amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
@@ -294,7 +303,7 @@ const lbl2 = document.getElementById('summaryLabel2');
 const val2 = document.getElementById('summaryValue2');
 const total = document.getElementById('totalPrice');
 
-// Nodos del desglose de instalación
+// Nodos Instalación
 const rowSmall = document.getElementById('rowSmall');
 const rowMedium = document.getElementById('rowMedium');
 const rowLarge = document.getElementById('rowLarge');
@@ -302,11 +311,15 @@ const valSmall = document.getElementById('valSmall');
 const valMedium = document.getElementById('valMedium');
 const valLarge = document.getElementById('valLarge');
 
-// Nodo de descuento
+// Nodos Delivery
+const suggestedRange = document.getElementById('deliverySuggestedRange');
+const manualDeliveryPrice = document.getElementById('manualDeliveryPrice').value;
+
+// Nodos Descuento
 const rowDiscount = document.getElementById('rowDiscount');
 const applyDiscount = document.getElementById('discountCheck').checked;
 
-// Mostrar/Ocultar fila de descuento en el resumen
+// Aplicar visibilidad del descuento
 if (applyDiscount) {
 rowDiscount.classList.remove('hidden');
 rowDiscount.classList.add('flex');
@@ -324,28 +337,38 @@ val1.innerText = "Delivery";
 lbl2.innerText = "Destino";
 val2.innerText = data.label;
 
-// Ocultar el desglose en Delivery
+// Ocultar desglose de obras
 rowSmall.classList.add('hidden'); rowSmall.classList.remove('flex');
 rowMedium.classList.add('hidden'); rowMedium.classList.remove('flex');
 rowLarge.classList.add('hidden'); rowLarge.classList.remove('flex');
 
+// Mostrar información del rango sugerido
 if (data.type === 'tbd') {
+suggestedRange.innerText = "Rango sugerido: Precio a cotizar / Variable";
+} else {
+suggestedRange.innerText = `Rango sugerido: ${formatCurrency(data.min)} - ${formatCurrency(data.max)}`;
+}
+suggestedRange.classList.remove('hidden');
+
+// Calcular el total final según el precio ingresado manualmente
+let finalPrice = parseFloat(manualDeliveryPrice) || 0;
+
+if (finalPrice === 0) {
 total.innerText = "A cotizar";
 total.style.fontSize = "2rem";
 } else {
-let minPrice = data.min;
-let maxPrice = data.max;
-
 if (applyDiscount) {
-minPrice = minPrice * 0.9;
-maxPrice = maxPrice * 0.9;
+finalPrice = finalPrice * 0.9;
+}
+total.innerText = formatCurrency(finalPrice);
+total.style.fontSize = "2.2rem";
 }
 
-total.innerText = `${formatCurrency(minPrice)} a ${formatCurrency(maxPrice)}`;
-total.style.fontSize = "1.5rem";
-}
 } 
 else if (currentTab === 'install') {
+// Ocultar la información visual del delivery
+suggestedRange.classList.add('hidden');
+
 const zoneKey = document.getElementById('installZone').value;
 const data = dbInstall[zoneKey];
 
@@ -373,6 +396,7 @@ let finalPrice = 0;
 
 if (totalQty === 0) {
 total.innerText = "$0";
+total.style.fontSize = "2rem";
 } else {
 if (zoneKey === 'miami_sitio' || zoneKey === 'fuera_miami') {
 finalPrice = (qS * data.prices.pequeno) + (qM * data.prices.mediano) + (qG * data.prices.grande);
@@ -396,9 +420,8 @@ finalPrice = finalPrice * 0.9;
 }
 
 total.innerText = formatCurrency(finalPrice);
+total.style.fontSize = "2.2rem";
 }
-
-total.style.fontSize = totalQty > 0 ? "2.2rem" : "2rem";
 }
 }
 
@@ -415,6 +438,14 @@ const discountText = applyDiscount ? "\n🏷️ *Promoción:* 10% de descuento A
 if (currentTab === 'delivery') {
 const sel = document.getElementById('deliveryZone');
 const destino = sel.options[sel.selectedIndex].text;
+
+// Validación para evitar enviar sin precio
+const manualDeliveryPrice = document.getElementById('manualDeliveryPrice').value;
+if (!manualDeliveryPrice || isNaN(manualDeliveryPrice) || manualDeliveryPrice == 0) {
+alert("Por favor, ingresa el 'Precio acordado' para el Delivery antes de enviar.");
+return;
+}
+
 mensaje = `Hola Ramos Delivery! 🚚\n\n👤 *Cotizado por:* ${workerNameFormat}\n📦 *Servicio:* Delivery\n📍 *Destino:* ${destino}${discountText}\n💰 *Estimado:* ${total}`;
 } else {
 const sel = document.getElementById('installZone');
@@ -429,6 +460,11 @@ if(qG > 0) sizesText.push(`${qG} Grande(s)`);
 if(qM > 0) sizesText.push(`${qM} Mediano(s)`);
 if(qS > 0) sizesText.push(`${qS} Pequeño(s)`);
 let obrasInfo = sizesText.length > 0 ? sizesText.join(", ") : "Ninguna";
+
+if (sizesText.length === 0) {
+alert("Por favor, ingresa al menos una obra para cotizar la instalación.");
+return;
+}
 
 mensaje = `Hola Ramos Delivery! 🖼️\n\n👤 *Cotizado por:* ${workerNameFormat}\n📦 *Servicio:* Instalación de Arte\n📍 *Ubicación:* ${zona}\n🖼️ *Obras:* ${obrasInfo}${discountText}\n💰 *Estimado:* ${total}`;
 }

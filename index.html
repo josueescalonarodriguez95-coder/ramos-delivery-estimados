@@ -1,710 +1,176 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Ramos Delivery - Estimador Interno</title>
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ramos Estimados">
-<link rel="apple-touch-icon" href="https://i.imgur.com/0WfdGVr.png">
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/lucide@latest"></script>
-<!-- Librería para crear PDF -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<script>
-tailwind.config = { theme: { extend: { fontFamily: { sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', 'Roboto', 'Helvetica', 'sans-serif'] }, colors: { primary: '#FF7A00' } } } }
-</script>
-<style>
-body { background-color: #000; -webkit-tap-highlight-color: transparent; overflow-x: hidden; }
-
-/* Fondo original cálido y vintage */
-.bg-mesh {
-position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-background: radial-gradient(at 20% 0%, hsla(28,100%,74%,1) 0px, transparent 50%),
-radial-gradient(at 80% 0%, hsla(189,100%,56%,0.4) 0px, transparent 50%),
-radial-gradient(at 100% 100%, hsla(355,100%,93%,1) 0px, transparent 50%),
-radial-gradient(at 0% 100%, hsla(22,100%,77%,1) 0px, transparent 50%);
-filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
-}
-
-.app-container { max-width: 440px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding-top: calc(1rem + env(safe-area-inset-top)); padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
-
-/* Tarjetas */
-.glass-light { background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.8); border-bottom: none; border-radius: 2.5rem 2.5rem 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.05); }
-.glass-dark { background: rgba(28, 28, 30, 0.85); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border-top: 1px solid rgba(255, 255, 255, 0.15); border-radius: 0 0 2.5rem 2.5rem; box-shadow: 0 15px 40px rgba(0,0,0,0.2); padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); }
-
-.glass-input { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.9); border-radius: 1.25rem; font-size: 16px !important; transition: all 0.2s ease; }
-.glass-input:focus { background: #ffffff; border-color: #FF7A00; outline: none; box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.15); }
-
-.segmented-control { background: rgba(0, 0, 0, 0.08); padding: 4px; border-radius: 99px; display: flex; }
-.segmented-btn { border-radius: 99px; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); color: #4b5563; font-weight: 500; }
-.segmented-btn.active { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); color: #FF7A00; font-weight: 700; }
-
-.tab-content { display: none; animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
-.tab-content.active { display: block; }
-@keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-.btn-apple { background: #ffffff; color: #000000; transition: transform 0.15s; }
-.btn-apple:active { transform: scale(0.96); background: #f3f4f6; }
-
-.custom-checkbox { width: 1.25rem; height: 1.25rem; accent-color: #FF7A00; cursor: pointer; }
-</style>
-</head>
-<body class="text-gray-900">
-<div class="bg-mesh"></div>
-<div class="app-container px-4 sm:px-0">
-<!-- HEADER -->
-<div class="flex items-center gap-4 mb-6 px-2 mt-2">
-<div class="w-16 h-16 flex-shrink-0 bg-white p-1 rounded-2xl shadow-md border border-gray-100 flex items-center justify-center">
-<img src="https://i.imgur.com/0WfdGVr.png" alt="Logotipo Ramos Delivery Enterprise" class="w-full h-full object-contain rounded-xl">
-</div>
-<div class="flex flex-col justify-center">
-<h1 class="font-black text-2xl tracking-tighter text-gray-900 leading-tight">Ramos Delivery</h1>
-<p class="text-xs font-bold text-orange-600 uppercase tracking-widest mt-0.5">Enterprise</p>
-</div>
-</div>
-
-<div class="flex flex-col shadow-2xl rounded-[2.5rem]">
-<div class="glass-light p-6 pb-6">
-<!-- SELECTOR DE TRABAJADOR -->
-<div class="mb-4">
-<label class="block text-sm font-bold text-gray-800 mb-2 ml-1">👤 Atendido por (Especialista)</label>
-<div class="relative">
-<select id="workerName" class="w-full glass-input text-gray-900 p-4 appearance-none cursor-pointer pr-10 font-bold border-orange-200">
-<option value="No especificado" disabled selected>Selecciona tu nombre...</option>
-<option value="Cristóbal Moit">Cristóbal Moit</option>
-<option value="Danilo Almarales">Danilo Almarales</option>
-<option value="Leonardo Escalona">Leonardo Escalona</option>
-<option value="Rafael Ramos">Rafael Ramos</option>
-<option value="Ruberlai Castro">Ruberlai Castro</option>
-</select>
-<i data-lucide="chevron-down" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none w-5 h-5"></i>
-</div>
-</div>
-
-<!-- INFORMACIÓN DEL CLIENTE -->
-<div class="mb-6 space-y-3 pt-3 border-t border-gray-300/40">
-<label class="block text-sm font-bold text-gray-800 ml-1">📋 Información del Cliente</label>
-<div class="relative">
-<i data-lucide="user" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"></i>
-<input type="text" id="clientName" placeholder="Nombre del cliente" class="w-full glass-input text-gray-900 p-3.5 pl-10 font-medium">
-</div>
-<div class="relative">
-<i data-lucide="map-pin" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"></i>
-<input type="text" id="clientAddress" placeholder="Dirección exacta" class="w-full glass-input text-gray-900 p-3.5 pl-10 font-medium">
-</div>
-</div>
-
-<!-- TRES PESTAÑAS -->
-<div class="segmented-control mb-6 text-[13px]">
-<button id="btnTabDelivery" onclick="switchTab('delivery')" class="segmented-btn active flex-1 py-2.5 flex justify-center items-center gap-1.5 leading-none">
-<i data-lucide="truck" class="w-3.5 h-3.5"></i> Delivery
-</button>
-<button id="btnTabInstall" onclick="switchTab('install')" class="segmented-btn flex-1 py-2.5 flex justify-center items-center gap-1.5 leading-none">
-<i data-lucide="frame" class="w-3.5 h-3.5"></i> Instalar
-</button>
-<button id="btnTabBoth" onclick="switchTab('both')" class="segmented-btn flex-1 py-2.5 flex justify-center items-center gap-1.5 leading-none">
-<i data-lucide="package-plus" class="w-3.5 h-3.5"></i> Ambos
-</button>
-</div>
-
-<!-- TAB DELIVERY -->
-<div id="tabDelivery" class="tab-content active space-y-4">
-<div>
-<label class="block text-sm font-bold text-gray-800 mb-2 ml-1">📍 Zona del envío</label>
-<div class="relative">
-<select id="deliveryZone" class="w-full glass-input text-gray-900 p-4 appearance-none cursor-pointer pr-10" onchange="calculate()">
-<optgroup label="Local (Miami)">
-<option value="miami_corta">Delivery local (0–5 mi)</option>
-<option value="miami_larga">Delivery local (5–15 mi)</option>
-<option value="miami_express">Delivery exprés (< 2 horas)</option>
-<option value="miami_programada">Entrega programada</option>
-</optgroup>
-<optgroup label="Florida (Fuera de Miami)">
-<option value="sur_fl">Sur de Florida (Broward, Palm Beach...)</option>
-<option value="centro_fl">Centro de Florida (Orlando, Tampa...)</option>
-<option value="norte_fl">Norte de Florida (Jacksonville...)</option>
-</optgroup>
-<optgroup label="Fuera de Florida">
-<option value="sureste_eeuu">Sureste de EE.UU. (Georgia, Carolinas...)</option>
-<option value="nacional">Nacional (Cualquier otro estado)</option>
-</optgroup>
-</select>
-<i data-lucide="chevron-down" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none w-5 h-5"></i>
-</div>
-<p id="deliverySuggestedRange" class="text-[11px] text-orange-600 font-bold mt-2 ml-2 hidden">Rango sugerido: $80 - $250</p>
-</div>
-
-<div>
-<label class="block text-sm font-bold text-gray-800 mb-2 ml-1">💰 Precio acordado ($)</label>
-<div class="relative">
-<span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600 font-bold">$</span>
-<input type="text" inputmode="decimal" id="manualDeliveryPrice" placeholder="Ej. 150" oninput="calculate()" class="w-full glass-input text-gray-900 p-4 pl-8 font-black text-lg">
-</div>
-</div>
-</div>
-
-<!-- TAB INSTALL -->
-<div id="tabInstall" class="tab-content space-y-4">
-<div>
-<label class="block text-sm font-bold text-gray-800 mb-2 ml-1">1. Ubicación de instalación</label>
-<div class="relative">
-<select id="installZone" class="w-full glass-input text-gray-900 p-4 appearance-none cursor-pointer pr-10" onchange="calculate()">
-<optgroup label="Miami">
-<option value="miami_sitio">Casa del cliente</option>
-<option value="miami_local">Local (Requiere desplazamiento a la casa)</option>
-</optgroup>
-<optgroup label="Fuera de Miami">
-<option value="fuera_miami">Cualquier zona (Broward, Palm Beach...)</option>
-</optgroup>
-</select>
-<i data-lucide="chevron-down" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none w-5 h-5"></i>
-</div>
-</div>
-
-<div>
-<label class="block text-sm font-bold text-gray-800 mb-2 ml-1">2. Obras a instalar (Cantidades)</label>
-<div class="grid grid-cols-3 gap-2">
-<div class="glass-input p-2 text-center">
-<span class="block text-[11px] font-bold text-gray-600 mb-1">Pequeños</span>
-<input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" id="qtySmall" value="0" oninput="calculate()" class="w-full text-center font-black bg-transparent border-none outline-none text-gray-900 text-lg">
-</div>
-<div class="glass-input p-2 text-center">
-<span class="block text-[11px] font-bold text-gray-600 mb-1">Medianos</span>
-<input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" id="qtyMedium" value="0" oninput="calculate()" class="w-full text-center font-black bg-transparent border-none outline-none text-gray-900 text-lg">
-</div>
-<div class="glass-input p-2 text-center">
-<span class="block text-[11px] font-bold text-gray-600 mb-1">Grandes</span>
-<input type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" spellcheck="false" id="qtyLarge" value="0" oninput="calculate()" class="w-full text-center font-black bg-transparent border-none outline-none text-gray-900 text-lg">
-</div>
-</div>
-</div>
-</div>
-
-<!-- CASILLA DE DESCUENTO -->
-<div class="mt-5 pt-5 border-t border-gray-200/60">
-<label class="flex items-center gap-3 cursor-pointer">
-<input type="checkbox" id="discountCheck" onchange="calculate()" class="custom-checkbox">
-<span class="text-sm font-bold text-gray-800 flex items-center gap-1.5">
-<i data-lucide="tag" class="w-4 h-4 text-orange-600"></i> Aplicar 10% de descuento
-</span>
-</label>
-</div>
-
-</div>
-
-<div class="glass-dark p-6 relative overflow-hidden">
-<div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>
-
-<div class="relative z-10">
-<h3 class="text-xs font-bold uppercase tracking-widest text-white/50 mb-3 flex items-center gap-2">
-<i data-lucide="receipt" class="w-4 h-4"></i> Resumen del Estimado
-</h3>
-
-<div class="space-y-2 mb-4">
-<div class="flex justify-between items-end border-b border-white/10 pb-2">
-<span id="summaryLabel1" class="text-xs text-white/70 font-medium">Servicio</span>
-<span id="summaryValue1" class="font-bold text-sm text-right text-white">Delivery</span>
-</div>
-<div class="flex justify-between items-end border-b border-white/10 pb-2">
-<span id="summaryLabel2" class="text-xs text-white/70 font-medium">Zona</span>
-<span id="summaryValue2" class="font-bold text-right text-white/90 text-xs max-w-[180px] truncate">Miami (0-5 mi)</span>
-</div>
-
-<!-- Desglose dinámico de cantidades (Instalación) -->
-<div id="rowSmall" class="hidden justify-between items-end border-b border-white/10 pb-2">
-<span class="text-xs text-white/70 font-medium flex items-center gap-1.5"><i data-lucide="frame" class="w-3.5 h-3.5 opacity-70"></i> Obras Pequeñas</span>
-<span id="valSmall" class="font-bold text-right text-white/90 text-xs">0</span>
-</div>
-<div id="rowMedium" class="hidden justify-between items-end border-b border-white/10 pb-2">
-<span class="text-xs text-white/70 font-medium flex items-center gap-1.5"><i data-lucide="frame" class="w-3.5 h-3.5 opacity-70"></i> Obras Medianas</span>
-<span id="valMedium" class="font-bold text-right text-white/90 text-xs">0</span>
-</div>
-<div id="rowLarge" class="hidden justify-between items-end border-b border-white/10 pb-2">
-<span class="text-xs text-white/70 font-medium flex items-center gap-1.5"><i data-lucide="frame" class="w-3.5 h-3.5 opacity-70"></i> Obras Grandes</span>
-<span id="valLarge" class="font-bold text-right text-white/90 text-xs">0</span>
-</div>
-
-<!-- FILAS DE DESGLOSE DE PRECIOS BASE -->
-<div id="rowDeliveryCost" class="hidden justify-between items-end border-b border-white/10 pb-2 mt-2">
-<span class="text-xs text-white/90 font-bold flex items-center gap-1.5"><i data-lucide="truck" class="w-3.5 h-3.5"></i> Precio Delivery</span>
-<span id="valDeliveryCost" class="font-bold text-right text-white text-sm">$0</span>
-</div>
-<div id="rowInstallCost" class="hidden justify-between items-end border-b border-white/10 pb-2 mt-2">
-<span class="text-xs text-white/90 font-bold flex items-center gap-1.5"><i data-lucide="hammer" class="w-3.5 h-3.5"></i> Costo Instalación</span>
-<span id="valInstallCost" class="font-bold text-right text-white text-sm">$0</span>
-</div>
-
-<!-- Fila del descuento -->
-<div id="rowDiscount" class="hidden justify-between items-end border-b border-white/10 pb-2">
-<span class="text-xs text-orange-400 font-bold flex items-center gap-1.5"><i data-lucide="badge-percent" class="w-4 h-4"></i> Descuento aplicado</span>
-<span class="font-bold text-right text-orange-400 text-xs">-10%</span>
-</div>
-</div>
-
-<div class="mb-5 mt-4">
-<span class="block text-xs text-white/70 mb-1 font-medium">Total Final a Pagar</span>
-<div class="text-3xl leading-none font-black text-white tracking-tight drop-shadow-md" id="totalPrice">
-A cotizar
-</div>
-</div>
-</div>
-
-<!-- BOTONES DE ACCIÓN -->
-<div class="flex gap-3 relative z-10">
-<button id="btnPdf" onclick="generarPDF()" class="btn-apple flex-1 py-3.5 rounded-[1.25rem] font-bold text-[13px] flex items-center justify-center gap-1.5 shadow-[0_8px_20px_rgba(0,0,0,0.2)] transition-all">
-<i data-lucide="file-text" class="w-4 h-4 text-orange-600"></i> PDF
-</button>
-<button onclick="contactarWhatsApp()" class="btn-apple flex-[2] py-3.5 rounded-[1.25rem] font-bold text-[15px] flex items-center justify-center gap-1.5 shadow-[0_8px_20px_rgba(0,0,0,0.2)]">
-<i data-lucide="message-circle" class="w-5 h-5 text-[#34C759]"></i> WhatsApp
-</button>
-</div>
-</div>
-</div>
-</div>
-
-<script>
-lucide.createIcons();
-let currentTab = 'delivery';
-
-let currentDeliveryTotal = 0;
-let currentInstallTotal = 0;
-let globalSubtotal = 0;
-let globalTotal = 0;
-let discountApplied = false;
-
-const dbDelivery = {
-miami_corta: { type: 'range', label: 'Miami (0-5 mi)', min: 80, max: 250 },
-miami_larga: { type: 'range', label: 'Miami (5-15 mi)', min: 80, max: 350 },
-miami_express: { type: 'range', label: 'Miami Exprés', min: 250, max: 500 },
-miami_programada: { type: 'tbd', label: 'Miami Programada' },
-sur_fl: { type: 'range', label: 'Sur de FL', min: 500, max: 900 },
-centro_fl: { type: 'range', label: 'Centro de FL', min: 950, max: 1200 },
-norte_fl: { type: 'range', label: 'Norte de FL', min: 2500, max: 5000 },
-sureste_eeuu: { type: 'range', label: 'Sureste EE.UU.', min: 3500, max: 6000 },
-nacional: { type: 'tbd', label: 'Nacional' }
-};
-
-const dbInstall = {
-miami_sitio: {
-label: 'Casa del cliente',
-prices: { pequeno: 50, mediano: 75, grande: 100 }
-},
-miami_local: {
-label: 'Local (Desplazamiento)',
-primera: { pequeno: 150, mediano: 180, grande: 220 },
-extra: { pequeno: 50, mediano: 75, grande: 100 }
-},
-fuera_miami: {
-label: 'Fuera de Miami',
-prices: { pequeno: 250, mediano: 300, grande: 350 }
-}
-};
-
-function formatCurrency(amount) {
-return "$" + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function switchTab(tabId) {
-currentTab = tabId;
-const tabDel = document.getElementById('tabDelivery');
-const tabInst = document.getElementById('tabInstall');
-
-const btnDel = document.getElementById('btnTabDelivery');
-const btnInst = document.getElementById('btnTabInstall');
-const btnBoth = document.getElementById('btnTabBoth');
-
-btnDel.classList.remove('active');
-btnInst.classList.remove('active');
-btnBoth.classList.remove('active');
-
-tabDel.classList.remove('active');
-tabInst.classList.remove('active');
-
-tabInst.classList.remove('mt-6', 'pt-6', 'border-t', 'border-gray-300/40');
-
-if (tabId === 'delivery') {
-tabDel.classList.add('active');
-btnDel.classList.add('active');
-} else if (tabId === 'install') {
-tabInst.classList.add('active');
-btnInst.classList.add('active');
-} else if (tabId === 'both') {
-tabDel.classList.add('active');
-tabInst.classList.add('active');
-btnBoth.classList.add('active');
-tabInst.classList.add('mt-6', 'pt-6', 'border-t', 'border-gray-300/40');
-}
-calculate();
-}
-
-function calculate() {
-const lbl1 = document.getElementById('summaryLabel1');
-const val1 = document.getElementById('summaryValue1');
-const lbl2 = document.getElementById('summaryLabel2');
-const val2 = document.getElementById('summaryValue2');
-const total = document.getElementById('totalPrice');
-
-const rowSmall = document.getElementById('rowSmall');
-const rowMedium = document.getElementById('rowMedium');
-const rowLarge = document.getElementById('rowLarge');
-const valSmall = document.getElementById('valSmall');
-const valMedium = document.getElementById('valMedium');
-const valLarge = document.getElementById('valLarge');
-
-const suggestedRange = document.getElementById('deliverySuggestedRange');
-const manualDeliveryPrice = document.getElementById('manualDeliveryPrice').value;
-
-const rowDeliveryCost = document.getElementById('rowDeliveryCost');
-const valDeliveryCost = document.getElementById('valDeliveryCost');
-const rowInstallCost = document.getElementById('rowInstallCost');
-const valInstallCost = document.getElementById('valInstallCost');
-
-const rowDiscount = document.getElementById('rowDiscount');
-discountApplied = document.getElementById('discountCheck').checked;
-
-if (discountApplied) {
-rowDiscount.classList.remove('hidden');
-rowDiscount.classList.add('flex');
-} else {
-rowDiscount.classList.add('hidden');
-rowDiscount.classList.remove('flex');
-}
-
-let tempDeliveryTotal = 0;
-let tempInstallTotal = 0;
-let totalQty = 0;
-
-if (currentTab === 'delivery' || currentTab === 'both') {
-const zoneKey = document.getElementById('deliveryZone').value;
-const data = dbDelivery[zoneKey];
-
-if (data.type === 'tbd') {
-suggestedRange.innerText = "Rango sugerido: Precio a cotizar";
-} else {
-suggestedRange.innerText = `Rango sugerido: ${formatCurrency(data.min)} - ${formatCurrency(data.max)}`;
-}
-suggestedRange.classList.remove('hidden');
-
-tempDeliveryTotal = parseFloat(manualDeliveryPrice) || 0;
-} else {
-suggestedRange.classList.add('hidden');
-}
-
-if (currentTab === 'install' || currentTab === 'both') {
-const zoneKeyInst = document.getElementById('installZone').value;
-const dataInst = dbInstall[zoneKeyInst];
-
-const qS = parseInt(document.getElementById('qtySmall').value) || 0;
-const qM = parseInt(document.getElementById('qtyMedium').value) || 0;
-const qG = parseInt(document.getElementById('qtyLarge').value) || 0;
-totalQty = qS + qM + qG;
-
-if (qS > 0) { valSmall.innerText = qS; rowSmall.classList.remove('hidden'); rowSmall.classList.add('flex'); } else { rowSmall.classList.add('hidden'); rowSmall.classList.remove('flex'); }
-if (qM > 0) { valMedium.innerText = qM; rowMedium.classList.remove('hidden'); rowMedium.classList.add('flex'); } else { rowMedium.classList.add('hidden'); rowMedium.classList.remove('flex'); }
-if (qG > 0) { valLarge.innerText = qG; rowLarge.classList.remove('hidden'); rowLarge.classList.add('flex'); } else { rowLarge.classList.add('hidden'); rowLarge.classList.remove('flex'); }
-
-if (totalQty > 0) {
-if (zoneKeyInst === 'miami_sitio' || zoneKeyInst === 'fuera_miami') {
-tempInstallTotal = (qS * dataInst.prices.pequeno) + (qM * dataInst.prices.mediano) + (qG * dataInst.prices.grande);
-}
-else if (zoneKeyInst === 'miami_local') {
-let countS = qS, countM = qM, countG = qG;
-if (countG > 0) {
-tempInstallTotal += dataInst.primera.grande + ((countG - 1) * dataInst.extra.grande);
-tempInstallTotal += countM * dataInst.extra.mediano + countS * dataInst.extra.pequeno;
-} else if (countM > 0) {
-tempInstallTotal += dataInst.primera.mediano + ((countM - 1) * dataInst.extra.mediano);
-tempInstallTotal += countS * dataInst.extra.pequeno;
-} else if (countS > 0) {
-tempInstallTotal += dataInst.primera.pequeno + ((countS - 1) * dataInst.extra.pequeno);
-}
-}
-}
-} else {
-rowSmall.classList.add('hidden'); rowSmall.classList.remove('flex');
-rowMedium.classList.add('hidden'); rowMedium.classList.remove('flex');
-rowLarge.classList.add('hidden'); rowLarge.classList.remove('flex');
-}
-
-currentDeliveryTotal = tempDeliveryTotal;
-currentInstallTotal = tempInstallTotal;
-
-if ((currentTab === 'delivery' || currentTab === 'both') && currentDeliveryTotal > 0) {
-valDeliveryCost.innerText = formatCurrency(currentDeliveryTotal);
-rowDeliveryCost.classList.remove('hidden'); rowDeliveryCost.classList.add('flex');
-} else {
-rowDeliveryCost.classList.add('hidden'); rowDeliveryCost.classList.remove('flex');
-}
-
-if ((currentTab === 'install' || currentTab === 'both') && currentInstallTotal > 0) {
-valInstallCost.innerText = formatCurrency(currentInstallTotal);
-rowInstallCost.classList.remove('hidden'); rowInstallCost.classList.add('flex');
-} else {
-rowInstallCost.classList.add('hidden'); rowInstallCost.classList.remove('flex');
-}
-
-if (currentTab === 'delivery') {
-lbl1.innerText = "Servicio"; val1.innerText = "Delivery";
-lbl2.innerText = "Zona"; val2.innerText = dbDelivery[document.getElementById('deliveryZone').value].label;
-globalSubtotal = currentDeliveryTotal;
-}
-else if (currentTab === 'install') {
-lbl1.innerText = "Servicio"; val1.innerText = totalQty > 0 ? `Instalación (${totalQty})` : "Instalación";
-lbl2.innerText = "Ubicación"; val2.innerText = dbInstall[document.getElementById('installZone').value].label;
-globalSubtotal = currentInstallTotal;
-}
-else if (currentTab === 'both') {
-lbl1.innerText = "Servicio"; val1.innerText = "Delivery + Instalación";
-lbl2.innerText = "Detalle"; val2.innerText = "Servicio Completo";
-globalSubtotal = currentDeliveryTotal + currentInstallTotal;
-}
-
-if (globalSubtotal === 0) {
-total.innerText = "A cotizar"; total.style.fontSize = "2rem";
-globalTotal = 0;
-} else {
-globalTotal = discountApplied ? globalSubtotal * 0.9 : globalSubtotal;
-total.innerText = formatCurrency(globalTotal); total.style.fontSize = "2.2rem";
-}
-}
-
-function validarFormulario() {
-if (currentTab === 'delivery' || currentTab === 'both') {
-const manualDeliveryPrice = document.getElementById('manualDeliveryPrice').value;
-if (!manualDeliveryPrice || isNaN(manualDeliveryPrice) || manualDeliveryPrice == 0) {
-alert("Por favor, ingresa el 'Precio acordado' para el Delivery.");
-return false;
-}
-}
-if (currentTab === 'install' || currentTab === 'both') {
-const qS = parseInt(document.getElementById('qtySmall').value) || 0;
-const qM = parseInt(document.getElementById('qtyMedium').value) || 0;
-const qG = parseInt(document.getElementById('qtyLarge').value) || 0;
-if ((qS + qM + qG) === 0) {
-alert("Por favor, ingresa al menos una obra para cotizar la instalación.");
-return false;
-}
-}
-return true;
-}
-
-function getDatosComunes() {
-const workerSelect = document.getElementById('workerName').value;
-const workerNameFormat = workerSelect !== "No especificado" ? workerSelect : "No especificado";
-const clientNameInput = document.getElementById('clientName').value.trim();
-const clientName = clientNameInput !== "" ? clientNameInput : "Cliente General";
-const clientAddressInput = document.getElementById('clientAddress').value.trim();
-const clientAddress = clientAddressInput !== "" ? clientAddressInput : "No especificada";
-
-const selDel = document.getElementById('deliveryZone');
-const destinoDel = selDel.options[selDel.selectedIndex].text;
-const selInst = document.getElementById('installZone');
-const zonaInst = selInst.options[selInst.selectedIndex].text;
-
-const qS = parseInt(document.getElementById('qtySmall').value) || 0;
-const qM = parseInt(document.getElementById('qtyMedium').value) || 0;
-const qG = parseInt(document.getElementById('qtyLarge').value) || 0;
-
-let sizesText = [];
-if(qG > 0) sizesText.push(`${qG} Grande(s)`);
-if(qM > 0) sizesText.push(`${qM} Mediano(s)`);
-if(qS > 0) sizesText.push(`${qS} Pequeño(s)`);
-let obrasInfo = sizesText.length > 0 ? sizesText.join(", ") : "Ninguna";
-
-return { workerNameFormat, clientName, clientAddress, destinoDel, zonaInst, obrasInfo };
-}
-
-function contactarWhatsApp() {
-if (!validarFormulario()) return;
-
-const numeroWhatsApp = "17864262444";
-const datos = getDatosComunes();
-const discountText = discountApplied ? "\n🏷️ *Descuento:* -10% Aplicado" : "";
-let mensaje = "";
-
-if (currentTab === 'delivery') {
-mensaje = `Hola Ramos Delivery! 🚚\n\n👤 *Cotizado por:* ${datos.workerNameFormat}\n🧑 *Cliente:* ${datos.clientName}\n🏠 *Dirección:* ${datos.clientAddress}\n\n📦 *Servicio:* Solo Delivery\n📍 *Zona:* ${datos.destinoDel}\n\n💵 *Precio Base:* ${formatCurrency(currentDeliveryTotal)}${discountText}\n\n💰 *Total a Pagar:* ${formatCurrency(globalTotal)}`;
-}
-else if (currentTab === 'install') {
-mensaje = `Hola Ramos Delivery! 🖼️\n\n👤 *Cotizado por:* ${datos.workerNameFormat}\n🧑 *Cliente:* ${datos.clientName}\n🏠 *Dirección:* ${datos.clientAddress}\n\n📦 *Servicio:* Solo Instalación\n📍 *Ubicación:* ${datos.zonaInst}\n🖼️ *Obras:* ${datos.obrasInfo}\n\n💵 *Subtotal:* ${formatCurrency(currentInstallTotal)}${discountText}\n\n💰 *Total a Pagar:* ${formatCurrency(globalTotal)}`;
-}
-else if (currentTab === 'both') {
-mensaje = `Hola Ramos Delivery! 🚚🖼️\n\n👤 *Cotizado por:* ${datos.workerNameFormat}\n🧑 *Cliente:* ${datos.clientName}\n🏠 *Dirección:* ${datos.clientAddress}\n\n📦 *Servicio:* Delivery + Instalación\n\n🚚 *DELIVERY:*\n📍 Zona: ${datos.destinoDel}\n💵 Monto: ${formatCurrency(currentDeliveryTotal)}\n\n🖼️ *INSTALACIÓN:*\n📍 Ubicación: ${datos.zonaInst}\n📦 Obras: ${datos.obrasInfo}\n💵 Subtotal obras: ${formatCurrency(currentInstallTotal)}\n\n💵 *Subtotal General:* ${formatCurrency(globalSubtotal)}${discountText}\n\n💰 *TOTAL FINAL:* ${formatCurrency(globalTotal)}`;
-}
-
-const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-window.open(url, '_blank');
-}
-
 function generarPDF() {
-if (!validarFormulario()) return;
+  if (!validarFormulario()) return;
 
-const btnPdf = document.getElementById('btnPdf');
-const originalContent = btnPdf.innerHTML;
-btnPdf.innerHTML = 'Procesando...';
+  const btnPdf = document.getElementById('btnPdf');
+  const originalContent = btnPdf.innerHTML;
+  btnPdf.innerHTML = 'Procesando...';
 
-const datos = getDatosComunes();
-const hoy = new Date();
-const fechaString = `${hoy.getDate().toString().padStart(2, '0')}/${(hoy.getMonth()+1).toString().padStart(2, '0')}/${hoy.getFullYear()}`;
-const invNum = "RDE-" + Math.floor(1000 + Math.random() * 9000);
+  const datos = getDatosComunes();
+  const hoy = new Date();
+  const fechaString = `${hoy.getDate().toString().padStart(2, '0')}/${(hoy.getMonth()+1).toString().padStart(2, '0')}/${hoy.getFullYear()}`;
+  const invNum = "RDE-" + Math.floor(1000 + Math.random() * 9000);
 
-// Generamos las filas de la tabla de forma dinámica
-let tableContent = '';
-if (currentTab === 'delivery' || currentTab === 'both') {
-tableContent += `
-<tr>
-<td style="padding: 12px; border-bottom: 1px solid #eee;">
-<strong style="color: #222; font-size: 15px;">Servicio de Transporte (Delivery)</strong><br>
-<span style="color: #666; font-size: 13px;">Zona designada: ${datos.destinoDel}</span>
-</td>
-<td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee; font-weight: bold; font-size: 15px;">
-${formatCurrency(currentDeliveryTotal)}
-</td>
-</tr>
-`;
+  // Generamos las filas de la tabla
+  let tableContent = '';
+  if (currentTab === 'delivery' || currentTab === 'both') {
+    tableContent += `
+    <tr>
+      <td style="padding: 12px; border-bottom: 1px solid #eee;">
+        <strong style="color: #222; font-size: 15px;">Servicio de Transporte (Delivery)</strong><br>
+        <span style="color: #666; font-size: 13px;">Zona designada: ${datos.destinoDel}</span>
+      </td>
+      <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee; font-weight: bold; font-size: 15px;">
+        ${formatCurrency(currentDeliveryTotal)}
+      </td>
+    </tr>`;
+  }
+
+  if (currentTab === 'install' || currentTab === 'both') {
+    tableContent += `
+    <tr>
+      <td style="padding: 12px; border-bottom: 1px solid #eee;">
+        <strong style="color: #222; font-size: 15px;">Servicio de Instalación de Arte</strong><br>
+        <span style="color: #666; font-size: 13px;">Ubicación: ${datos.zonaInst}</span><br>
+        <span style="color: #666; font-size: 13px;">Detalle de obras: ${datos.obrasInfo}</span>
+      </td>
+      <td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee; font-weight: bold; font-size: 15px;">
+        ${formatCurrency(currentInstallTotal)}
+      </td>
+    </tr>`;
+  }
+
+  let discountHtml = '';
+  if (discountApplied) {
+    discountHtml = `
+    <div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; color: #FF7A00; font-size: 15px;">
+      <span>Descuento Promocional (10%):</span>
+      <strong>-${formatCurrency(globalSubtotal * 0.10)}</strong>
+    </div>`;
+  }
+
+  let serviceTypeLabel = currentTab === 'delivery' ? 'Solo Delivery' : (currentTab === 'install' ? 'Instalación de Arte' : 'Servicio Completo (Delivery + Instalación)');
+
+  const pdfTemplateStr = `
+  <div style="width: 800px; padding: 40px; background: white; color: #333; font-family: Helvetica, Arial, sans-serif; line-height: 1.5; box-sizing: border-box; margin: 0;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #FF7A00; padding-bottom: 20px; margin-bottom: 25px;">
+      <div>
+        <img src="https://i.imgur.com/0WfdGVr.png" style="height: 80px; border-radius: 12px; margin-bottom: 10px;" crossorigin="anonymous">
+        <h2 style="margin: 0; color: #FF7A00; font-size: 22px;">Ramos Delivery Enterprise</h2>
+        <p style="margin: 3px 0 0 0; color: #666; font-size: 14px;">Miami, Florida</p>
+        <p style="margin: 0; color: #666; font-size: 14px;">Tel: (786) 426-2444</p>
+      </div>
+      <div style="text-align: right;">
+        <h1 style="margin: 0; color: #222; font-size: 38px; letter-spacing: 2px;">INVOICE</h1>
+        <p style="margin: 8px 0 0 0; font-size: 15px;"><strong>Factura #:</strong> ${invNum}</p>
+        <p style="margin: 4px 0 0 0; font-size: 15px;"><strong>Fecha:</strong> ${fechaString}</p>
+      </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+      <div style="width: 48%;">
+        <h3 style="margin: 0 0 8px 0; color: #FF7A00; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 16px;">Facturar a:</h3>
+        <p style="margin: 4px 0; font-size: 14px;"><strong>Cliente:</strong> ${datos.clientName}</p>
+        <p style="margin: 4px 0; font-size: 14px;"><strong>Dirección:</strong> ${datos.clientAddress}</p>
+      </div>
+      <div style="width: 48%;">
+        <h3 style="margin: 0 0 8px 0; color: #FF7A00; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 16px;">Detalles del Servicio:</h3>
+        <p style="margin: 4px 0; font-size: 14px;"><strong>Especialista:</strong> ${datos.workerNameFormat}</p>
+        <p style="margin: 4px 0; font-size: 14px;"><strong>Tipo de Servicio:</strong> ${serviceTypeLabel}</p>
+      </div>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+      <thead>
+        <tr style="background-color: #f8f9fa;">
+          <th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd; color: #444; font-size: 14px;">Descripción del Concepto</th>
+          <th style="padding: 10px; text-align: right; border-bottom: 2px solid #ddd; color: #444; width: 140px; font-size: 14px;">Monto</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${tableContent}
+      </tbody>
+    </table>
+
+    <div style="display: flex; justify-content: flex-end;">
+      <div style="width: 320px;">
+        <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px;">
+          <span>Subtotal Estimado:</span>
+          <strong>${formatCurrency(globalSubtotal)}</strong>
+        </div>
+        ${discountHtml}
+        <div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 20px; font-weight: bold; color: #222; border-bottom: 3px solid #FF7A00;">
+          <span>Total General:</span>
+          <span>${formatCurrency(globalTotal)}</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px; text-align: center; color: #888; font-size: 12px; border-top: 1px solid #eee; padding-top: 15px;">
+      <p style="margin: 0 0 4px 0;">Gracias por confiar en <strong>Ramos Delivery Enterprise</strong> para el manejo logístico de su arte.</p>
+      <p style="margin: 0;">Para consultas sobre esta factura, por favor comuníquese directamente con su especialista o contáctenos al (786) 426-2444.</p>
+    </div>
+  </div>`;
+
+  // --- AQUÍ ESTÁ LA MAGIA ---
+  const element = document.createElement('div');
+  element.innerHTML = pdfTemplateStr;
+  
+  // Lo posicionamos fuera de la pantalla para que el usuario no lo vea
+  element.style.position = 'absolute';
+  element.style.left = '-9999px';
+  element.style.top = '-9999px';
+  element.style.zIndex = '-1';
+  
+  // LO AÑADIMOS AL DOM. Sin esto, el PDF sale en blanco.
+  document.body.appendChild(element);
+  // ---------------------------
+
+  const opt = {
+    margin: 0.1,
+    filename: `Invoice_${datos.clientName.replace(/\s+/g, '_')}_${invNum}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { 
+      scale: 2, 
+      useCORS: true, 
+      scrollY: 0, 
+      windowWidth: 800 
+    },
+    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
+    // --- LIMPIEZA ---
+    // Borramos el div temporal para no ensuciar la página
+    document.body.removeChild(element);
+    // ----------------
+
+    const file = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
+
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({
+        files: [file],
+        title: 'Invoice Ramos Delivery',
+        text: 'Adjunto el invoice de su servicio con Ramos Delivery Enterprise.'
+      }).then(() => {
+        btnPdf.innerHTML = originalContent;
+      }).catch((error) => {
+        console.log('Compartir cancelado o con error', error);
+        btnPdf.innerHTML = originalContent;
+      });
+    } else {
+      const url = URL.createObjectURL(pdfBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = opt.filename;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      btnPdf.innerHTML = originalContent;
+    }
+  }).catch(err => {
+    // En caso de error, también debemos limpiar el DOM
+    document.body.removeChild(element);
+    btnPdf.innerHTML = originalContent;
+    console.error('Error al generar PDF:', err);
+  });
 }
-
-if (currentTab === 'install' || currentTab === 'both') {
-tableContent += `
-<tr>
-<td style="padding: 12px; border-bottom: 1px solid #eee;">
-<strong style="color: #222; font-size: 15px;">Servicio de Instalación de Arte</strong><br>
-<span style="color: #666; font-size: 13px;">Ubicación: ${datos.zonaInst}</span><br>
-<span style="color: #666; font-size: 13px;">Detalle de obras: ${datos.obrasInfo}</span>
-</td>
-<td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee; font-weight: bold; font-size: 15px;">
-${formatCurrency(currentInstallTotal)}
-</td>
-</tr>
-`;
-}
-
-let discountHtml = '';
-if (discountApplied) {
-discountHtml = `
-<div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; color: #FF7A00; font-size: 15px;">
-<span>Descuento Promocional (10%):</span>
-<strong>-${formatCurrency(globalSubtotal * 0.10)}</strong>
-</div>
-`;
-}
-
-let serviceTypeLabel = currentTab === 'delivery' ? 'Solo Delivery' : (currentTab === 'install' ? 'Instalación de Arte' : 'Servicio Completo (Delivery + Instalación)');
-
-// Construimos la plantilla del PDF sin ocultarla.
-const pdfTemplateStr = `
-<div style="width: 800px; padding: 40px; background: white; color: #333; font-family: Helvetica, Arial, sans-serif; line-height: 1.5; box-sizing: border-box; margin: 0;">
-<div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #FF7A00; padding-bottom: 20px; margin-bottom: 25px;">
-<div>
-<img src="https://i.imgur.com/0WfdGVr.png" style="height: 80px; border-radius: 12px; margin-bottom: 10px;" crossorigin="anonymous">
-<h2 style="margin: 0; color: #FF7A00; font-size: 22px;">Ramos Delivery Enterprise</h2>
-<p style="margin: 3px 0 0 0; color: #666; font-size: 14px;">Miami, Florida</p>
-<p style="margin: 0; color: #666; font-size: 14px;">Tel: (786) 426-2444</p>
-</div>
-<div style="text-align: right;">
-<h1 style="margin: 0; color: #222; font-size: 38px; letter-spacing: 2px;">INVOICE</h1>
-<p style="margin: 8px 0 0 0; font-size: 15px;"><strong>Factura #:</strong> ${invNum}</p>
-<p style="margin: 4px 0 0 0; font-size: 15px;"><strong>Fecha:</strong> ${fechaString}</p>
-</div>
-</div>
-
-<div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
-<div style="width: 48%;">
-<h3 style="margin: 0 0 8px 0; color: #FF7A00; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 16px;">Facturar a:</h3>
-<p style="margin: 4px 0; font-size: 14px;"><strong>Cliente:</strong> ${datos.clientName}</p>
-<p style="margin: 4px 0; font-size: 14px;"><strong>Dirección:</strong> ${datos.clientAddress}</p>
-</div>
-<div style="width: 48%;">
-<h3 style="margin: 0 0 8px 0; color: #FF7A00; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 16px;">Detalles del Servicio:</h3>
-<p style="margin: 4px 0; font-size: 14px;"><strong>Especialista:</strong> ${datos.workerNameFormat}</p>
-<p style="margin: 4px 0; font-size: 14px;"><strong>Tipo de Servicio:</strong> ${serviceTypeLabel}</p>
-</div>
-</div>
-
-<table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
-<thead>
-<tr style="background-color: #f8f9fa;">
-<th style="padding: 10px; text-align: left; border-bottom: 2px solid #ddd; color: #444; font-size: 14px;">Descripción del Concepto</th>
-<th style="padding: 10px; text-align: right; border-bottom: 2px solid #ddd; color: #444; width: 140px; font-size: 14px;">Monto</th>
-</tr>
-</thead>
-<tbody>
-${tableContent}
-</tbody>
-</table>
-
-<div style="display: flex; justify-content: flex-end;">
-<div style="width: 320px;">
-<div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px;">
-<span>Subtotal Estimado:</span>
-<strong>${formatCurrency(globalSubtotal)}</strong>
-</div>
-${discountHtml}
-<div style="display: flex; justify-content: space-between; padding: 12px 0; font-size: 20px; font-weight: bold; color: #222; border-bottom: 3px solid #FF7A00;">
-<span>Total General:</span>
-<span>${formatCurrency(globalTotal)}</span>
-</div>
-</div>
-</div>
-
-<div style="margin-top: 40px; text-align: center; color: #888; font-size: 12px; border-top: 1px solid #eee; padding-top: 15px;">
-<p style="margin: 0 0 4px 0;">Gracias por confiar en <strong>Ramos Delivery Enterprise</strong> para el manejo logístico de su arte.</p>
-<p style="margin: 0;">Para consultas sobre esta factura, por favor comuníquese directamente con su especialista o contáctenos al (786) 426-2444.</p>
-</div>
-</div>
-`;
-
-// En lugar de meterlo en el body, simplemente usamos el div en memoria.
-const element = document.createElement('div');
-element.innerHTML = pdfTemplateStr;
-
-const opt = {
-margin: 0.1,
-filename: `Invoice_${datos.clientName.replace(/\s+/g, '_')}_${invNum}.pdf`,
-image: { type: 'jpeg', quality: 0.98 },
-html2canvas: { 
-scale: 2, 
-useCORS: true, 
-scrollY: 0, // Esto arregla el espacio en blanco de arriba
-windowWidth: 800 // Esto fuerza a que respete el tamaño del PDF y no el de tu pantalla del teléfono
-},
-jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-};
-
-html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
-const file = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
-
-if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-navigator.share({
-files: [file],
-title: 'Invoice Ramos Delivery',
-text: 'Adjunto el invoice de su servicio con Ramos Delivery Enterprise.'
-}).then(() => {
-btnPdf.innerHTML = originalContent;
-}).catch((error) => {
-console.log('Compartir cancelado o con error', error);
-btnPdf.innerHTML = originalContent;
-});
-} else {
-const url = URL.createObjectURL(pdfBlob);
-const a = document.createElement('a');
-a.href = url;
-a.download = opt.filename;
-document.body.appendChild(a);
-a.click();
-URL.revokeObjectURL(url);
-btnPdf.innerHTML = originalContent;
-}
-}).catch(err => {
-btnPdf.innerHTML = originalContent;
-console.error('Error al generar PDF:', err);
-});
-}
-
-calculate();
-</script>
-</body>
-</html>
-

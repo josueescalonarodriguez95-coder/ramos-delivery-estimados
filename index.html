@@ -593,13 +593,12 @@ discountHtml = `
 
 let serviceTypeLabel = currentTab === 'delivery' ? 'Solo Delivery' : (currentTab === 'install' ? 'Instalación de Arte' : 'Servicio Completo (Delivery + Instalación)');
 
-// Construimos la plantilla asegurando un ancho estándar de hoja Carta y reseteo de márgenes
+// Construimos la plantilla del PDF sin ocultarla.
 const pdfTemplateStr = `
 <div style="width: 800px; padding: 40px; background: white; color: #333; font-family: Helvetica, Arial, sans-serif; line-height: 1.5; box-sizing: border-box; margin: 0;">
-
 <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #FF7A00; padding-bottom: 20px; margin-bottom: 25px;">
 <div>
-<img src="https://i.imgur.com/0WfdGVr.png" style="height: 80px; border-radius: 12px; margin-bottom: 10px;">
+<img src="https://i.imgur.com/0WfdGVr.png" style="height: 80px; border-radius: 12px; margin-bottom: 10px;" crossorigin="anonymous">
 <h2 style="margin: 0; color: #FF7A00; font-size: 22px;">Ramos Delivery Enterprise</h2>
 <p style="margin: 3px 0 0 0; color: #666; font-size: 14px;">Miami, Florida</p>
 <p style="margin: 0; color: #666; font-size: 14px;">Tel: (786) 426-2444</p>
@@ -657,27 +656,24 @@ ${discountHtml}
 </div>
 `;
 
-// CREACIÓN Y POSICIONAMIENTO FIX PARA EVITAR EL ESPACIO EN BLANCO
+// En lugar de meterlo en el body, simplemente usamos el div en memoria.
 const element = document.createElement('div');
-element.style.position = 'fixed';
-element.style.top = '0';
-element.style.left = '0';
-element.style.zIndex = '-9999';
-element.style.opacity = '1';
 element.innerHTML = pdfTemplateStr;
-document.body.appendChild(element);
 
 const opt = {
-margin: 0.2, // Añade un pequeño margen uniforme
+margin: 0.1,
 filename: `Invoice_${datos.clientName.replace(/\s+/g, '_')}_${invNum}.pdf`,
 image: { type: 'jpeg', quality: 0.98 },
-html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+html2canvas: { 
+scale: 2, 
+useCORS: true, 
+scrollY: 0, // Esto arregla el espacio en blanco de arriba
+windowWidth: 800 // Esto fuerza a que respete el tamaño del PDF y no el de tu pantalla del teléfono
+},
 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
 };
 
-// Genera el PDF y limpia el elemento del DOM al finalizar
 html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
-document.body.removeChild(element); // Limpia el elemento de la memoria/pantalla
 const file = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
 
 if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -702,7 +698,6 @@ URL.revokeObjectURL(url);
 btnPdf.innerHTML = originalContent;
 }
 }).catch(err => {
-if (document.body.contains(element)) document.body.removeChild(element);
 btnPdf.innerHTML = originalContent;
 console.error('Error al generar PDF:', err);
 });

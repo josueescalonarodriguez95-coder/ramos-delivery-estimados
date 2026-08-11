@@ -68,7 +68,7 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 <div class="flex flex-col shadow-2xl rounded-[2.5rem]">
 <div class="glass-light p-6 pb-6">
 <!-- SELECTOR DE TRABAJADOR -->
-<div class="mb-6">
+<div class="mb-4">
 <label class="block text-sm font-bold text-gray-800 mb-2 ml-1">👤 Atendido por (Especialista)</label>
 <div class="relative">
 <select id="workerName" class="w-full glass-input text-gray-900 p-4 appearance-none cursor-pointer pr-10 font-bold border-orange-200">
@@ -80,6 +80,19 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 <option value="Ruberlai Castro">Ruberlai Castro</option>
 </select>
 <i data-lucide="chevron-down" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 pointer-events-none w-5 h-5"></i>
+</div>
+</div>
+
+<!-- INFORMACIÓN DEL CLIENTE (NUEVO) -->
+<div class="mb-6 space-y-3 pt-3 border-t border-gray-300/40">
+<label class="block text-sm font-bold text-gray-800 ml-1">📋 Información del Cliente</label>
+<div class="relative">
+<i data-lucide="user" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"></i>
+<input type="text" id="clientName" placeholder="Nombre del cliente" class="w-full glass-input text-gray-900 p-3.5 pl-10 font-medium">
+</div>
+<div class="relative">
+<i data-lucide="map-pin" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"></i>
+<input type="text" id="clientAddress" placeholder="Dirección exacta" class="w-full glass-input text-gray-900 p-3.5 pl-10 font-medium">
 </div>
 </div>
 
@@ -99,7 +112,7 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 <!-- TAB DELIVERY -->
 <div id="tabDelivery" class="tab-content active space-y-4">
 <div>
-<label class="block text-sm font-bold text-gray-800 mb-2 ml-1">📍 Destino del envío</label>
+<label class="block text-sm font-bold text-gray-800 mb-2 ml-1">📍 Zona del envío</label>
 <div class="relative">
 <select id="deliveryZone" class="w-full glass-input text-gray-900 p-4 appearance-none cursor-pointer pr-10" onchange="calculate()">
 <optgroup label="Local (Miami)">
@@ -195,7 +208,7 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 <span id="summaryValue1" class="font-bold text-sm text-right text-white">Delivery</span>
 </div>
 <div class="flex justify-between items-end border-b border-white/10 pb-2">
-<span id="summaryLabel2" class="text-xs text-white/70 font-medium">Detalle</span>
+<span id="summaryLabel2" class="text-xs text-white/70 font-medium">Zona</span>
 <span id="summaryValue2" class="font-bold text-right text-white/90 text-xs max-w-[180px] truncate">Miami (0-5 mi)</span>
 </div>
 
@@ -441,7 +454,7 @@ rowInstallCost.classList.remove('flex');
 // 3. ACTUALIZAR RESUMEN TOTAL
 if (currentTab === 'delivery') {
 lbl1.innerText = "Servicio"; val1.innerText = "Delivery";
-lbl2.innerText = "Destino"; val2.innerText = dbDelivery[document.getElementById('deliveryZone').value].label;
+lbl2.innerText = "Zona"; val2.innerText = dbDelivery[document.getElementById('deliveryZone').value].label;
 
 let finalD = currentDeliveryTotal;
 if (finalD === 0) { 
@@ -480,8 +493,17 @@ total.innerText = formatCurrency(finalBoth); total.style.fontSize = "2.2rem";
 function contactarWhatsApp() {
 const numeroWhatsApp = "17864262444";
 const total = document.getElementById('totalPrice').innerText;
+
+// Datos del Especialista y Cliente
 const workerSelect = document.getElementById('workerName').value;
 const workerNameFormat = workerSelect !== "No especificado" ? workerSelect : "No especificado";
+
+const clientNameInput = document.getElementById('clientName').value.trim();
+const clientName = clientNameInput !== "" ? clientNameInput : "No especificado";
+
+const clientAddressInput = document.getElementById('clientAddress').value.trim();
+const clientAddress = clientAddressInput !== "" ? clientAddressInput : "No especificada";
+
 const applyDiscount = document.getElementById('discountCheck').checked;
 
 let discountText = "";
@@ -500,7 +522,7 @@ return;
 const sel = document.getElementById('deliveryZone');
 const destino = sel.options[sel.selectedIndex].text;
 
-mensaje = `Hola Ramos Delivery! 🚚\n\n👤 *Cotizado por:* ${workerNameFormat}\n📦 *Servicio:* Solo Delivery\n📍 *Destino:* ${destino}\n\n💵 *Precio Base:* ${formatCurrency(currentDeliveryTotal)}${discountText}\n\n💰 *Total a Pagar:* ${total}`;
+mensaje = `Hola Ramos Delivery! 🚚\n\n👤 *Cotizado por:* ${workerNameFormat}\n🧑 *Cliente:* ${clientName}\n🏠 *Dirección:* ${clientAddress}\n\n📦 *Servicio:* Solo Delivery\n📍 *Zona:* ${destino}\n\n💵 *Precio Base:* ${formatCurrency(currentDeliveryTotal)}${discountText}\n\n💰 *Total a Pagar:* ${total}`;
 } 
 else if (currentTab === 'install') {
 const sel = document.getElementById('installZone');
@@ -521,7 +543,7 @@ alert("Por favor, ingresa al menos una obra para cotizar la instalación.");
 return;
 }
 
-mensaje = `Hola Ramos Delivery! 🖼️\n\n👤 *Cotizado por:* ${workerNameFormat}\n📦 *Servicio:* Solo Instalación\n📍 *Ubicación:* ${zona}\n🖼️ *Obras:* ${obrasInfo}\n\n💵 *Subtotal:* ${formatCurrency(currentInstallTotal)}${discountText}\n\n💰 *Total a Pagar:* ${total}`;
+mensaje = `Hola Ramos Delivery! 🖼️\n\n👤 *Cotizado por:* ${workerNameFormat}\n🧑 *Cliente:* ${clientName}\n🏠 *Dirección:* ${clientAddress}\n\n📦 *Servicio:* Solo Instalación\n📍 *Ubicación:* ${zona}\n🖼️ *Obras:* ${obrasInfo}\n\n💵 *Subtotal:* ${formatCurrency(currentInstallTotal)}${discountText}\n\n💰 *Total a Pagar:* ${total}`;
 }
 else if (currentTab === 'both') {
 const manualDeliveryPrice = document.getElementById('manualDeliveryPrice').value;
@@ -552,7 +574,7 @@ const zonaInst = selInst.options[selInst.selectedIndex].text;
 
 let subtotalGeneral = currentDeliveryTotal + currentInstallTotal;
 
-mensaje = `Hola Ramos Delivery! 🚚🖼️\n\n👤 *Cotizado por:* ${workerNameFormat}\n📦 *Servicio:* Delivery + Instalación\n\n🚚 *DELIVERY:*\n📍 Destino: ${destinoDel}\n💵 Monto acordado: ${formatCurrency(currentDeliveryTotal)}\n\n🖼️ *INSTALACIÓN:*\n📍 Ubicación: ${zonaInst}\n📦 Obras: ${obrasInfo}\n💵 Subtotal obras: ${formatCurrency(currentInstallTotal)}\n\n💵 *Subtotal General:* ${formatCurrency(subtotalGeneral)}${discountText}\n\n💰 *TOTAL FINAL:* ${total}`;
+mensaje = `Hola Ramos Delivery! 🚚🖼️\n\n👤 *Cotizado por:* ${workerNameFormat}\n🧑 *Cliente:* ${clientName}\n🏠 *Dirección:* ${clientAddress}\n\n📦 *Servicio:* Delivery + Instalación\n\n🚚 *DELIVERY:*\n📍 Zona: ${destinoDel}\n💵 Monto acordado: ${formatCurrency(currentDeliveryTotal)}\n\n🖼️ *INSTALACIÓN:*\n📍 Ubicación: ${zonaInst}\n📦 Obras: ${obrasInfo}\n💵 Subtotal obras: ${formatCurrency(currentInstallTotal)}\n\n💵 *Subtotal General:* ${formatCurrency(subtotalGeneral)}${discountText}\n\n💰 *TOTAL FINAL:* ${total}`;
 }
 
 const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;

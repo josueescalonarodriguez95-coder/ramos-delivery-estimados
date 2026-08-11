@@ -264,77 +264,6 @@ A cotizar
 </div>
 </div>
 
-<!-- PLANTILLA INVISIBLE PARA EL INVOICE EN PDF -->
-<div id="pdf-container" style="position: absolute; left: -9999px; top: 0; background: white;">
-<div id="invoice-template" style="width: 800px; min-height: 1000px; padding: 50px; background: white; color: #333; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 14px; line-height: 1.5;">
-<!-- Cabecera de la Factura -->
-<div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #FF7A00; padding-bottom: 20px; margin-bottom: 30px;">
-<div>
-<img src="https://i.imgur.com/0WfdGVr.png" style="height: 90px; border-radius: 12px; margin-bottom: 10px;">
-<h2 style="margin: 0; color: #FF7A00; font-size: 24px;">Ramos Delivery Enterprise</h2>
-<p style="margin: 5px 0 0 0; color: #666;">Miami, Florida</p>
-<p style="margin: 0; color: #666;">Tel: (786) 426-2444</p>
-</div>
-<div style="text-align: right;">
-<h1 style="margin: 0; color: #222; font-size: 45px; letter-spacing: 2px;">INVOICE</h1>
-<p style="margin: 10px 0 0 0; font-size: 16px;"><strong>Factura #:</strong> <span id="pdf-inv-num"></span></p>
-<p style="margin: 5px 0 0 0; font-size: 16px;"><strong>Fecha:</strong> <span id="pdf-inv-date"></span></p>
-</div>
-</div>
-
-<!-- Detalles del Cliente -->
-<div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
-<div style="width: 45%;">
-<h3 style="margin: 0 0 10px 0; color: #FF7A00; border-bottom: 1px solid #eee; padding-bottom: 5px;">Facturar a:</h3>
-<p style="margin: 5px 0;"><strong>Cliente:</strong> <span id="pdf-client-name"></span></p>
-<p style="margin: 5px 0;"><strong>Dirección:</strong> <span id="pdf-client-address"></span></p>
-</div>
-<div style="width: 45%;">
-<h3 style="margin: 0 0 10px 0; color: #FF7A00; border-bottom: 1px solid #eee; padding-bottom: 5px;">Detalles del Servicio:</h3>
-<p style="margin: 5px 0;"><strong>Especialista:</strong> <span id="pdf-worker-name"></span></p>
-<p style="margin: 5px 0;"><strong>Tipo de Servicio:</strong> <span id="pdf-service-type"></span></p>
-</div>
-</div>
-
-<!-- Tabla de Conceptos -->
-<table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-<thead>
-<tr style="background-color: #f8f9fa;">
-<th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd; color: #444;">Descripción</th>
-<th style="padding: 12px; text-align: right; border-bottom: 2px solid #ddd; color: #444; width: 150px;">Monto</th>
-</tr>
-</thead>
-<tbody id="pdf-table-body">
-<!-- Filas dinámicas -->
-</tbody>
-</table>
-
-<!-- Totales -->
-<div style="display: flex; justify-content: flex-end;">
-<div style="width: 350px;">
-<div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 16px;">
-<span>Subtotal:</span>
-<strong id="pdf-subtotal"></strong>
-</div>
-<div id="pdf-discount-row" style="display: none; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; color: #FF7A00; font-size: 16px;">
-<span>Descuento (10%):</span>
-<strong id="pdf-discount-amount"></strong>
-</div>
-<div style="display: flex; justify-content: space-between; padding: 15px 0; font-size: 24px; font-weight: bold; color: #222; border-bottom: 3px solid #FF7A00;">
-<span>Total:</span>
-<span id="pdf-total"></span>
-</div>
-</div>
-</div>
-
-<!-- Pie de página -->
-<div style="margin-top: 60px; text-align: center; color: #888; font-size: 13px; border-top: 1px solid #eee; padding-top: 20px;">
-<p style="margin: 0 0 5px 0;">Gracias por confiar en <strong>Ramos Delivery Enterprise</strong> para el manejo de su arte.</p>
-<p style="margin: 0;">Para consultas sobre esta factura, por favor contáctenos al (786) 426-2444.</p>
-</div>
-</div>
-</div>
-
 <script>
 lucide.createIcons();
 let currentTab = 'delivery';
@@ -447,7 +376,6 @@ let tempDeliveryTotal = 0;
 let tempInstallTotal = 0;
 let totalQty = 0;
 
-// 1. EVALUAR DELIVERY
 if (currentTab === 'delivery' || currentTab === 'both') {
 const zoneKey = document.getElementById('deliveryZone').value;
 const data = dbDelivery[zoneKey];
@@ -464,7 +392,6 @@ tempDeliveryTotal = parseFloat(manualDeliveryPrice) || 0;
 suggestedRange.classList.add('hidden');
 }
 
-// 2. EVALUAR INSTALACIÓN
 if (currentTab === 'install' || currentTab === 'both') {
 const zoneKeyInst = document.getElementById('installZone').value;
 const dataInst = dbInstall[zoneKeyInst];
@@ -518,7 +445,6 @@ rowInstallCost.classList.remove('hidden'); rowInstallCost.classList.add('flex');
 rowInstallCost.classList.add('hidden'); rowInstallCost.classList.remove('flex');
 }
 
-// 3. ACTUALIZAR RESUMEN TOTAL Y VARIABLES GLOBALES
 if (currentTab === 'delivery') {
 lbl1.innerText = "Servicio"; val1.innerText = "Delivery";
 lbl2.innerText = "Zona"; val2.innerText = dbDelivery[document.getElementById('deliveryZone').value].label;
@@ -544,7 +470,6 @@ total.innerText = formatCurrency(globalTotal); total.style.fontSize = "2.2rem";
 }
 }
 
-// VALIDACIÓN ANTES DE ENVIAR O GENERAR PDF
 function validarFormulario() {
 if (currentTab === 'delivery' || currentTab === 'both') {
 const manualDeliveryPrice = document.getElementById('manualDeliveryPrice').value;
@@ -569,7 +494,7 @@ function getDatosComunes() {
 const workerSelect = document.getElementById('workerName').value;
 const workerNameFormat = workerSelect !== "No especificado" ? workerSelect : "No especificado";
 const clientNameInput = document.getElementById('clientName').value.trim();
-const clientName = clientNameInput !== "" ? clientNameInput : "Cliente";
+const clientName = clientNameInput !== "" ? clientNameInput : "Cliente General";
 const clientAddressInput = document.getElementById('clientAddress').value.trim();
 const clientAddress = clientAddressInput !== "" ? clientAddressInput : "No especificada";
 
@@ -616,85 +541,151 @@ window.open(url, '_blank');
 function generarPDF() {
 if (!validarFormulario()) return;
 
-// Animación del botón para indicar que está procesando
 const btnPdf = document.getElementById('btnPdf');
 const originalContent = btnPdf.innerHTML;
-btnPdf.innerHTML = 'Generando...';
+btnPdf.innerHTML = 'Procesando...';
 
 const datos = getDatosComunes();
 const hoy = new Date();
 const fechaString = `${hoy.getDate().toString().padStart(2, '0')}/${(hoy.getMonth()+1).toString().padStart(2, '0')}/${hoy.getFullYear()}`;
 const invNum = "RDE-" + Math.floor(1000 + Math.random() * 9000);
 
-document.getElementById('pdf-inv-num').innerText = invNum;
-document.getElementById('pdf-inv-date').innerText = fechaString;
-document.getElementById('pdf-client-name').innerText = datos.clientName;
-document.getElementById('pdf-client-address').innerText = datos.clientAddress;
-document.getElementById('pdf-worker-name').innerText = datos.workerNameFormat;
-
-let sType = "";
-if(currentTab === 'delivery') sType = "Solo Delivery";
-if(currentTab === 'install') sType = "Instalación de Arte";
-if(currentTab === 'both') sType = "Servicio Completo (Delivery + Instalación)";
-document.getElementById('pdf-service-type').innerText = sType;
-
-const tableBody = document.getElementById('pdf-table-body');
-tableBody.innerHTML = ""; 
-
+// Generamos las filas de la tabla de forma dinámica para asegurar que se muestren
+let tableContent = '';
 if (currentTab === 'delivery' || currentTab === 'both') {
-const tr = document.createElement('tr');
-tr.innerHTML = `<td style="padding: 12px; border-bottom: 1px solid #eee;"><strong>Servicio de Transporte (Delivery)</strong><br><span style="color: #666; font-size: 13px;">Zona: ${datos.destinoDel}</span></td>
-<td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee; font-weight: bold;">${formatCurrency(currentDeliveryTotal)}</td>`;
-tableBody.appendChild(tr);
+tableContent += `
+<tr>
+<td style="padding: 12px; border-bottom: 1px solid #eee;">
+<strong style="color: #222; font-size: 15px;">Servicio de Transporte (Delivery)</strong><br>
+<span style="color: #666; font-size: 13px;">Zona designada: ${datos.destinoDel}</span>
+</td>
+<td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee; font-weight: bold; font-size: 15px;">
+${formatCurrency(currentDeliveryTotal)}
+</td>
+</tr>
+`;
 }
 
 if (currentTab === 'install' || currentTab === 'both') {
-const tr = document.createElement('tr');
-tr.innerHTML = `<td style="padding: 12px; border-bottom: 1px solid #eee;"><strong>Servicio de Instalación de Arte</strong><br><span style="color: #666; font-size: 13px;">Ubicación: ${datos.zonaInst}<br>Obras: ${datos.obrasInfo}</span></td>
-<td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee; font-weight: bold;">${formatCurrency(currentInstallTotal)}</td>`;
-tableBody.appendChild(tr);
+tableContent += `
+<tr>
+<td style="padding: 12px; border-bottom: 1px solid #eee;">
+<strong style="color: #222; font-size: 15px;">Servicio de Instalación de Arte</strong><br>
+<span style="color: #666; font-size: 13px;">Ubicación: ${datos.zonaInst}</span><br>
+<span style="color: #666; font-size: 13px;">Detalle de obras: ${datos.obrasInfo}</span>
+</td>
+<td style="padding: 12px; text-align: right; border-bottom: 1px solid #eee; font-weight: bold; font-size: 15px;">
+${formatCurrency(currentInstallTotal)}
+</td>
+</tr>
+`;
 }
 
-document.getElementById('pdf-subtotal').innerText = formatCurrency(globalSubtotal);
-
-const discRow = document.getElementById('pdf-discount-row');
+let discountHtml = '';
 if (discountApplied) {
-document.getElementById('pdf-discount-amount').innerText = "-" + formatCurrency(globalSubtotal * 0.10);
-discRow.style.display = "flex";
-} else {
-discRow.style.display = "none";
+discountHtml = `
+<div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; color: #FF7A00; font-size: 15px;">
+<span>Descuento Promocional (10%):</span>
+<strong>-${formatCurrency(globalSubtotal * 0.10)}</strong>
+</div>
+`;
 }
 
-document.getElementById('pdf-total').innerText = formatCurrency(globalTotal);
+let serviceTypeLabel = currentTab === 'delivery' ? 'Solo Delivery' : (currentTab === 'install' ? 'Instalación de Arte' : 'Servicio Completo (Delivery + Instalación)');
 
-const element = document.getElementById('invoice-template');
+// Construimos la estructura HTML del PDF de forma 100% visible en memoria
+const pdfTemplateStr = `
+<div style="width: 800px; padding: 50px; background: white; color: #333; font-family: Helvetica, Arial, sans-serif; line-height: 1.5; box-sizing: border-box;">
+
+<div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 3px solid #FF7A00; padding-bottom: 20px; margin-bottom: 30px;">
+<div>
+<img src="https://i.imgur.com/0WfdGVr.png" style="height: 90px; border-radius: 12px; margin-bottom: 10px;">
+<h2 style="margin: 0; color: #FF7A00; font-size: 24px;">Ramos Delivery Enterprise</h2>
+<p style="margin: 5px 0 0 0; color: #666;">Miami, Florida</p>
+<p style="margin: 0; color: #666;">Tel: (786) 426-2444</p>
+</div>
+<div style="text-align: right;">
+<h1 style="margin: 0; color: #222; font-size: 45px; letter-spacing: 2px;">INVOICE</h1>
+<p style="margin: 10px 0 0 0; font-size: 16px;"><strong>Factura #:</strong> ${invNum}</p>
+<p style="margin: 5px 0 0 0; font-size: 16px;"><strong>Fecha:</strong> ${fechaString}</p>
+</div>
+</div>
+
+<div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
+<div style="width: 45%;">
+<h3 style="margin: 0 0 10px 0; color: #FF7A00; border-bottom: 1px solid #eee; padding-bottom: 5px;">Facturar a:</h3>
+<p style="margin: 5px 0; font-size: 15px;"><strong>Cliente:</strong> ${datos.clientName}</p>
+<p style="margin: 5px 0; font-size: 15px;"><strong>Dirección:</strong> ${datos.clientAddress}</p>
+</div>
+<div style="width: 45%;">
+<h3 style="margin: 0 0 10px 0; color: #FF7A00; border-bottom: 1px solid #eee; padding-bottom: 5px;">Detalles del Servicio:</h3>
+<p style="margin: 5px 0; font-size: 15px;"><strong>Especialista:</strong> ${datos.workerNameFormat}</p>
+<p style="margin: 5px 0; font-size: 15px;"><strong>Tipo de Servicio:</strong> ${serviceTypeLabel}</p>
+</div>
+</div>
+
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+<thead>
+<tr style="background-color: #f8f9fa;">
+<th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd; color: #444; font-size: 15px;">Descripción del Concepto</th>
+<th style="padding: 12px; text-align: right; border-bottom: 2px solid #ddd; color: #444; width: 150px; font-size: 15px;">Monto</th>
+</tr>
+</thead>
+<tbody>
+${tableContent}
+</tbody>
+</table>
+
+<div style="display: flex; justify-content: flex-end;">
+<div style="width: 350px;">
+<div style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; font-size: 15px;">
+<span>Subtotal Estimado:</span>
+<strong>${formatCurrency(globalSubtotal)}</strong>
+</div>
+${discountHtml}
+<div style="display: flex; justify-content: space-between; padding: 15px 0; font-size: 24px; font-weight: bold; color: #222; border-bottom: 3px solid #FF7A00;">
+<span>Total General:</span>
+<span>${formatCurrency(globalTotal)}</span>
+</div>
+</div>
+</div>
+
+<div style="margin-top: 60px; text-align: center; color: #888; font-size: 13px; border-top: 1px solid #eee; padding-top: 20px;">
+<p style="margin: 0 0 5px 0;">Gracias por confiar en <strong>Ramos Delivery Enterprise</strong> para el manejo logístico de su arte.</p>
+<p style="margin: 0;">Para consultas sobre esta factura, por favor comuníquese directamente con su especialista o contáctenos al (786) 426-2444.</p>
+</div>
+</div>
+`;
+
+const element = document.createElement('div');
+element.innerHTML = pdfTemplateStr;
 
 const opt = {
 margin: 0,
 filename: `Invoice_${datos.clientName.replace(/\s+/g, '_')}_${invNum}.pdf`,
 image: { type: 'jpeg', quality: 0.98 },
-html2canvas: { scale: 2, useCORS: true },
+html2canvas: { scale: 2, useCORS: true, letterRendering: true },
 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
 };
 
-// Aquí convertimos el PDF a un archivo en memoria (Blob) para activar el Share de iOS/Android
+// Crea el PDF en la memoria
 html2pdf().set(opt).from(element).outputPdf('blob').then(function(pdfBlob) {
 const file = new File([pdfBlob], opt.filename, { type: 'application/pdf' });
 
-// Intenta abrir el menú nativo de compartir
+// Intenta activar el Share nativo de iPhone/Android
 if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
 navigator.share({
 files: [file],
 title: 'Invoice Ramos Delivery',
-text: 'Aquí está el estimado/invoice de Ramos Delivery Enterprise.'
+text: 'Adjunto el invoice de su servicio con Ramos Delivery Enterprise.'
 }).then(() => {
-btnPdf.innerHTML = originalContent; // Restaura el botón
+btnPdf.innerHTML = originalContent;
 }).catch((error) => {
-console.log('Error al compartir', error);
+console.log('Compartir cancelado o con error', error);
 btnPdf.innerHTML = originalContent;
 });
 } else {
-// Si estás en PC o un navegador que no lo soporta, hace la descarga normal
+// Si el navegador no lo soporta (ej. PC), lo descarga normal
 const url = URL.createObjectURL(pdfBlob);
 const a = document.createElement('a');
 a.href = url;

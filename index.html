@@ -176,6 +176,20 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 <span id="summaryLabel2" class="text-xs text-white/70 font-medium">Detalle</span>
 <span id="summaryValue2" class="font-bold text-right text-white/90 text-xs max-w-[180px] truncate">Miami (0-5 mi)</span>
 </div>
+
+<!-- Desglose dinámico de cantidades (Solo visible en Instalación si > 0) -->
+<div id="rowSmall" class="hidden justify-between items-end border-b border-white/10 pb-2">
+<span class="text-xs text-white/70 font-medium flex items-center gap-1.5"><i data-lucide="frame" class="w-3.5 h-3.5 opacity-70"></i> Obras Pequeñas</span>
+<span id="valSmall" class="font-bold text-right text-white/90 text-xs">0</span>
+</div>
+<div id="rowMedium" class="hidden justify-between items-end border-b border-white/10 pb-2">
+<span class="text-xs text-white/70 font-medium flex items-center gap-1.5"><i data-lucide="frame" class="w-3.5 h-3.5 opacity-70"></i> Obras Medianas</span>
+<span id="valMedium" class="font-bold text-right text-white/90 text-xs">0</span>
+</div>
+<div id="rowLarge" class="hidden justify-between items-end border-b border-white/10 pb-2">
+<span class="text-xs text-white/70 font-medium flex items-center gap-1.5"><i data-lucide="frame" class="w-3.5 h-3.5 opacity-70"></i> Obras Grandes</span>
+<span id="valLarge" class="font-bold text-right text-white/90 text-xs">0</span>
+</div>
 </div>
 
 <div class="mb-5">
@@ -258,6 +272,14 @@ const lbl2 = document.getElementById('summaryLabel2');
 const val2 = document.getElementById('summaryValue2');
 const total = document.getElementById('totalPrice');
 
+// Nodos del desglose
+const rowSmall = document.getElementById('rowSmall');
+const rowMedium = document.getElementById('rowMedium');
+const rowLarge = document.getElementById('rowLarge');
+const valSmall = document.getElementById('valSmall');
+const valMedium = document.getElementById('valMedium');
+const valLarge = document.getElementById('valLarge');
+
 if (currentTab === 'delivery') {
 const zoneKey = document.getElementById('deliveryZone').value;
 const data = dbDelivery[zoneKey];
@@ -266,6 +288,11 @@ lbl1.innerText = "Servicio";
 val1.innerText = "Delivery";
 lbl2.innerText = "Destino";
 val2.innerText = data.label;
+
+// Ocultar el desglose en Delivery
+rowSmall.classList.add('hidden'); rowSmall.classList.remove('flex');
+rowMedium.classList.add('hidden'); rowMedium.classList.remove('flex');
+rowLarge.classList.add('hidden'); rowLarge.classList.remove('flex');
 
 if (data.type === 'tbd') {
 total.innerText = "A cotizar";
@@ -288,6 +315,16 @@ lbl1.innerText = "Servicio";
 val1.innerText = totalQty > 0 ? `Instalación (${totalQty})` : "Instalación";
 lbl2.innerText = "Ubicación";
 val2.innerText = data.label;
+
+// Mostrar / Ocultar desglose según las cantidades ingresadas
+if (qS > 0) { valSmall.innerText = qS; rowSmall.classList.remove('hidden'); rowSmall.classList.add('flex'); } 
+else { rowSmall.classList.add('hidden'); rowSmall.classList.remove('flex'); }
+
+if (qM > 0) { valMedium.innerText = qM; rowMedium.classList.remove('hidden'); rowMedium.classList.add('flex'); } 
+else { rowMedium.classList.add('hidden'); rowMedium.classList.remove('flex'); }
+
+if (qG > 0) { valLarge.innerText = qG; rowLarge.classList.remove('hidden'); rowLarge.classList.add('flex'); } 
+else { rowLarge.classList.add('hidden'); rowLarge.classList.remove('flex'); }
 
 let finalPrice = 0;
 
@@ -354,3 +391,4 @@ calculate();
 </script>
 </body>
 </html>
+

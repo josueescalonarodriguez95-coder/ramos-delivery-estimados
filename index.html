@@ -100,7 +100,7 @@
                     </div>
                 </div>
 
-                <!-- TAB INSTALL (NUEVO DISEÑO MIXTO) -->
+                <!-- TAB INSTALL -->
                 <div id="tabInstall" class="tab-content space-y-7">
                     <div>
                         <label class="block text-sm font-bold text-gray-800 mb-2 ml-1">1. Ubicación del trabajo</label>
@@ -122,7 +122,7 @@
                         <label class="block text-sm font-bold text-gray-800 mb-3 ml-1">2. Obras a instalar (Cantidades)</label>
                         <div class="space-y-3">
                             
-                            <!-- Pequeños -->
+                            <!-- Pequeños (CORREGIDO A 0) -->
                             <div class="flex items-center justify-between glass-input p-2 pr-3">
                                 <div class="flex items-center gap-3 pl-2">
                                     <i data-lucide="frame" class="w-5 h-5 text-gray-500"></i>
@@ -130,7 +130,7 @@
                                 </div>
                                 <div class="flex items-center bg-white/60 rounded-xl border border-white">
                                     <button type="button" onclick="changeSizeQty('qtySmall', -1)" class="w-10 h-10 flex items-center justify-center text-gray-800 active:scale-95"><i data-lucide="minus" class="w-4 h-4"></i></button>
-                                    <input type="number" id="qtySmall" value="1" min="0" class="w-8 text-center font-black bg-transparent border-none outline-none text-gray-900" readonly>
+                                    <input type="number" id="qtySmall" value="0" min="0" class="w-8 text-center font-black bg-transparent border-none outline-none text-gray-900" readonly>
                                     <button type="button" onclick="changeSizeQty('qtySmall', 1)" class="w-10 h-10 flex items-center justify-center text-[#FF7A00] active:scale-95"><i data-lucide="plus" class="w-4 h-4"></i></button>
                                 </div>
                             </div>
@@ -258,7 +258,6 @@
             calculate();
         }
 
-        // Nueva función para sumar/restar tallas independientes
         function changeSizeQty(id, amount) {
             const input = document.getElementById(id);
             let val = parseInt(input.value) + amount;
@@ -315,7 +314,6 @@
                         finalPrice = (qS * data.prices.pequeno) + (qM * data.prices.mediano) + (qG * data.prices.grande);
                     } 
                     else if (zoneKey === 'miami_local') {
-                        // Cobra la "primera" (desplazamiento) a la obra más grande que haya en la lista
                         if (qG > 0) {
                             finalPrice = data.primera.grande + ((qG - 1) * data.extra.grande) + (qM * data.extra.mediano) + (qS * data.extra.pequeno);
                         } else if (qM > 0) {

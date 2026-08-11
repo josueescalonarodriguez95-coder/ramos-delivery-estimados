@@ -140,7 +140,8 @@ filter: blur(50px); opacity: 0.8; background-color: #f2f2f7;
 <label class="block text-sm font-bold text-gray-800 mb-2 ml-1">💰 Precio acordado ($)</label>
 <div class="relative">
 <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-600 font-bold">$</span>
-<input type="text" inputmode="decimal" id="manualDeliveryPrice" placeholder="Ej. 150" oninput="calculate()" class="w-full glass-input text-gray-900 p-4 pl-8 font-black text-lg">
+<!-- Input original pero con la ID identificada para ser modificada dinámicamente -->
+<input type="text" inputmode="decimal" id="manualDeliveryPrice" placeholder="Ej. 80" oninput="calculate()" class="w-full glass-input text-gray-900 p-4 pl-8 font-black text-lg">
 </div>
 </div>
 </div>
@@ -354,7 +355,8 @@ const valMedium = document.getElementById('valMedium');
 const valLarge = document.getElementById('valLarge');
 
 const suggestedRange = document.getElementById('deliverySuggestedRange');
-const manualDeliveryPrice = document.getElementById('manualDeliveryPrice').value;
+const manualDeliveryPriceInput = document.getElementById('manualDeliveryPrice'); // Capturamos el input aquí
+const manualDeliveryPrice = manualDeliveryPriceInput.value;
 
 const rowDeliveryCost = document.getElementById('rowDeliveryCost');
 const valDeliveryCost = document.getElementById('valDeliveryCost');
@@ -382,8 +384,12 @@ const data = dbDelivery[zoneKey];
 
 if (data.type === 'tbd') {
 suggestedRange.innerText = "Rango sugerido: Precio a cotizar";
+// Si no hay rango sugerido, le ponemos un texto genérico
+manualDeliveryPriceInput.placeholder = "Ej. 150"; 
 } else {
 suggestedRange.innerText = `Rango sugerido: ${formatCurrency(data.min)} - ${formatCurrency(data.max)}`;
+// Aquí actualizamos dinámicamente el "Ejemplo" para que sea el valor mínimo de la base de datos
+manualDeliveryPriceInput.placeholder = `Ej. ${data.min}`;
 }
 suggestedRange.classList.remove('hidden');
 
@@ -538,7 +544,6 @@ const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}
 window.open(url, '_blank');
 }
 
-// ------ FUNCIÓN CORREGIDA 100% SEGURA ------
 function generarPDF() {
 if (!validarFormulario()) return;
 
@@ -699,6 +704,7 @@ console.error('Error al generar PDF:', err);
 });
 }
 
+// Llamar calculate al iniciar para que establezca el placeholder inicial correctamente
 calculate();
 </script>
 </body>
